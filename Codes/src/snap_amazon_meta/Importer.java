@@ -20,6 +20,7 @@ public class Importer {
 	private static BufferedReader reader;
 	private static Connection connection;
 	
+	
 	// store mata 
 	private static int id = 0;
 	private static String asin = null;
