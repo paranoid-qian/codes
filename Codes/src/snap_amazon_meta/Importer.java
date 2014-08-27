@@ -13,9 +13,6 @@ public class Importer {
 	
 	// const.
 	public static final int IGNORE = 7; // 头7行（描述性信息和id=0的product）忽略
-	public static final String CONN_URL = "jdbc:mysql://localhost:3306/snap_amazon_meta?useUnicode=true&amp;characterEncoding=UTF-8";
-	public static final String USERNAME = "root";
-	public static final String PASSWORD	= "root";
 	
 	private static BufferedReader reader;
 	private static Connection connection;
@@ -35,7 +32,7 @@ public class Importer {
 			"`review_total`, `review_download`, `review_avg_rating`) " +
 			" VALUES(?,?,?,?,?,?,?,?,?);";
 	private static String catSql = "INSERT INTO category(`cat_id`, `cat_name`, `cat_level`, `item_id`) VALUES(?,?,?,?);";
-	private static String reviewSql = "INSERT INTO review(`item_id`, `date`, `customer_id`, `rating`, `votes`, `helpful`) VALUES(?,?,?,?,?,?);";
+	private static String reviewSql = "INSERT INTO review(`item_id`, `date`, `customer_uid`, `rating`, `votes`, `helpful`) VALUES(?,?,?,?,?,?);";
 	// ps
 	private static PreparedStatement itemPs = null;
 	private static PreparedStatement catPs = null;
@@ -45,7 +42,7 @@ public class Importer {
 	public static void main(String[] args) {
 		
 		try {
-			reader = new BufferedReader(new FileReader("E:\\斯坦福snap project数据集\\amazon-meta.txt\\amazon-meta.txt"));
+			reader = new BufferedReader(new FileReader("E:\\斯坦福snap project数据集\\amazon-meta.txt\\sample.txt"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -54,7 +51,7 @@ public class Importer {
 		ignore(IGNORE);
 		
 		// open connection
-		openConn(CONN_URL, USERNAME, PASSWORD);
+		connection = DbUtil.openConn();
 		
 		// process content
 		String line = null;
@@ -66,7 +63,7 @@ public class Importer {
 				line = reader.readLine();
 			} while (line != null); // until end of file
 			
-			closeConn();
+			DbUtil.closeConn(connection);
 			System.out.println("\nsnap amazon meta insert completed. Total items: " + itemCount);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,6 +79,7 @@ public class Importer {
 		group = getText(reader.readLine());			// group
 		salesRank = getLong(reader.readLine());		//salesrank
 		reader.readLine();							// similar, not used
+		
 		// categories
 		catCount = getInt(reader.readLine());		// category count
 		
@@ -143,26 +141,10 @@ public class Importer {
 		itemPs.setFloat(9, reviewAvgRating);
 		itemPs.executeUpdate();
 		
-		System.err.println("item " + id + " inserted completed.");
+		System.err.println("item " + id + " inserted completed.\n");
 	}
 	
-	private static void openConn(String url, String username, String password) {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("success load mysql driver");
-			connection = DriverManager.getConnection(url, username, password);
-		} catch (Exception e) {
-			System.out.println("failed load mysql driver");
-			e.printStackTrace();
-		}
-	}
-	private static void closeConn() {
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	private static void ignore(int lines) {
 		try {
 			for (int i = 0; i < lines; i++) {
