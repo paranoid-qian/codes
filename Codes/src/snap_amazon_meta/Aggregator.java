@@ -12,7 +12,6 @@ import java.util.List;
 
 public class Aggregator {
 	
-	private static final String folder = "E:\\斯坦福snap project数据集\\result\\";
 	private static int label = 0;
 	private static Connection connection;
 
@@ -68,7 +67,7 @@ public class Aggregator {
 	
 	
 	
-	public static List<String> compositeAttrValue(List<List<String>> attrValues) {
+	private static List<String> compositeAttrValue(List<List<String>> attrValues) {
 		List<String> attrValuesSql = new ArrayList<String>();
 		for (List<String> attrValue: attrValues) {
 			attrValuesSql = dualComposite(attrValuesSql, attrValue);
@@ -76,7 +75,7 @@ public class Aggregator {
 		return attrValuesSql;
 	}
 	
-	public static List<String> dualComposite(List<String> l1, List<String> l2) {
+	private static List<String> dualComposite(List<String> l1, List<String> l2) {
 		if (l1.isEmpty()) {
 			return l2;
 		}
@@ -89,9 +88,9 @@ public class Aggregator {
 		return rst;
 	}
 	
-	public static void dumpResult(String fileName, String label, String ids) {
+	private static void dumpResult(String fileName, String label, String ids) {
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(new java.io.File(folder + fileName), true)); // append
+			BufferedWriter writer = new BufferedWriter(new FileWriter(new java.io.File(Constant.AGGOUTPUT_FOLDER + fileName), true)); // append
 			writer.write(label);	// label
 			writer.newLine();
 			
@@ -101,19 +100,21 @@ public class Aggregator {
 			writer.flush();
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 	
-	public static String genFileName(List<String> attrs) {
+	private static String genFileName(List<String> attrs) {
 		StringBuilder fileName = new StringBuilder();
 		for (String attr : attrs) {
-			fileName.append(attr).append(".");
+			fileName.append(attr).append(Constant.DOT);
 		}
 		fileName.append("dat");
 		return fileName.toString();
 	}
 	
 	
+	// test
 	public static void main(String[] args) {
 		String[] attrs = {"group"};
 		try {

@@ -14,7 +14,6 @@ import java.util.List;
 
 public class AttrValueUtil {
 	
-	private static final String SERI_PATH = "E:\\斯坦福snap project数据集\\amazon-meta.txt\\";
 	private static Connection connection = null;
 	
 	
@@ -53,9 +52,9 @@ public class AttrValueUtil {
 	
 	private static void storeAttrValues(String table, String attr, List<String> attrValues) {
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SERI_PATH + table + "." + attr + ".serialize.dat"));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Constant.SERI_PATH + table + Constant.DOT + attr + Constant.SERI_POSTFIX));
 			oos.writeObject(attrValues);
-			System.out.println("序列化" + table + "." + attr + "离散值域 completed.\n");
+			System.out.println("序列化" + table + Constant.DOT + attr + "离散值域 completed.\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -64,11 +63,11 @@ public class AttrValueUtil {
 	@SuppressWarnings("unchecked")
 	private static List<String> pickAttrValues(String table, String attr) {
 		try {
-			if (!new File(SERI_PATH + table + "." + attr + ".serialize.dat").exists()) {
+			if (!new File(Constant.SERI_PATH + table + Constant.DOT + attr + Constant.SERI_POSTFIX).exists()) {
 				return null;
 			}
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SERI_PATH +  table + "." + attr + ".serialize.dat"));
-			System.out.println("从cache反序列化 " + table + "." + attr + "离散值域 completed.\n");
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Constant.SERI_PATH +  table + Constant.DOT + attr + "Constant.SERI_POSTFIX"));
+			System.out.println("从cache反序列化 " + table + Constant.DOT + attr + "离散值域 completed.\n");
 			return (List<String>)ois.readObject();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,7 +76,7 @@ public class AttrValueUtil {
 	}
 	
 	
-	
+	// test
 	public static void main(String[] args) {
 		String[] attrs = {"cat_level"};
 		List<List<String>> list = getAttrsValues("category", Arrays.asList(attrs));

@@ -5,15 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class Importer {
-	
-	// const.
-	public static final int IGNORE = 7; // 头7行（描述性信息和id=0的product）忽略
-	
 	private static BufferedReader reader;
 	private static Connection connection;
 	
@@ -38,17 +32,15 @@ public class Importer {
 	private static PreparedStatement catPs = null;
 	private static PreparedStatement reviewPs = null;
 	
-	
-	public static void main(String[] args) {
-		
+	public static void importItems() {
 		try {
-			reader = new BufferedReader(new FileReader("E:\\斯坦福snap project数据集\\amazon-meta.txt\\sample.txt"));
+			reader = new BufferedReader(new FileReader(Constant.SOURCE));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		
 		// ignore description information and id=0 product
-		ignore(IGNORE);
+		ignore(Constant.IGNORE);
 		
 		// open connection
 		connection = DbUtil.openConn();
@@ -68,9 +60,7 @@ public class Importer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
 	
 	private static void itemProcess() throws Exception {
 		id = getInt(reader.readLine());				// id 
@@ -143,7 +133,6 @@ public class Importer {
 		
 		System.err.println("item " + id + " inserted completed.\n");
 	}
-	
 	
 	private static void ignore(int lines) {
 		try {
