@@ -10,7 +10,18 @@ public class DbUtil {
 	public static final String USERNAME = "root";
 	public static final String PASSWORD	= "root";
 	
+	// table names
+	public static final String ITEM_TABLE = "item";
+	public static final String CAT_TABLE = "category";
+	public static final String REVIEW_TABLE = "review";
+	
+	
+	private static Connection connection = null;
+	
 	public static Connection openConn() {
+		if (connection != null) {
+			return connection;
+		}
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("success load mysql driver");
@@ -25,7 +36,10 @@ public class DbUtil {
 	
 	public static void closeConn(Connection connection) {
 		try {
-			connection.close();
+			if (connection != null) {
+				connection.close();
+				connection = null;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
