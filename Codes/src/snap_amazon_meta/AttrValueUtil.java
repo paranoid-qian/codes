@@ -49,7 +49,6 @@ public class AttrValueUtil {
 		return attrsValues;
 	}
 	
-	
 	private static void storeAttrValues(String table, String attr, List<String> attrValues) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(Constant.SERI_PATH + table + Constant.DOT + attr + Constant.SERI_POSTFIX));

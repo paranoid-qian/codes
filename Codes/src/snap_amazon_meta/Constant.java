@@ -19,6 +19,12 @@ public interface Constant {
 	public static final String AGGOUTPUT_FOLDER = "E:\\斯坦福snap project数据集\\result\\";
 	
 	
+	// salesrank
+	public static final int maxRank = 3798351;
+	public static final int minRank = -1;
+	public static final int rankStep = 10000;
+	
+	
 	//others 
 	public static final String DOT = ".";
 	public static final String SP = "|";
