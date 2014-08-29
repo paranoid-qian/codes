@@ -1,49 +1,40 @@
 package snap_amazon_meta;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class Importer {
 	private static BufferedReader reader;
-	private static Connection connection;
+	private static BufferedWriter itemWriter;
+	private static BufferedWriter catWriter;
+	private static BufferedWriter reviewWriter;
 	
 	// store mata 
-	private static int id = 0;
+	private static String id = null;
 	private static String asin = null;
 	private static String title = null;
 	private static String group = null;
-	private static long salesRank = 0L;
-	private static int catCount = 0;
-	private static int reviewTotal = 0;
-	private static int reviewDownload = 0;
-	private static float reviewAvgRating = 0f;
-	// sql 
-	private static String itemSql = "INSERT INTO item(`id`, `asin`, `title`, `group`, `salesrank`, `cat_count`, " +
-			"`review_total`, `review_download`, `review_avg_rating`) " +
-			" VALUES(?,?,?,?,?,?,?,?,?);";
-	private static String catSql = "INSERT INTO category(`cat_id`, `cat_name`, `cat_level`, `item_id`) VALUES(?,?,?,?);";
-	private static String reviewSql = "INSERT INTO review(`item_id`, `date`, `customer_uid`, `rating`, `votes`, `helpful`) VALUES(?,?,?,?,?,?);";
-	// ps
-	private static PreparedStatement itemPs = null;
-	private static PreparedStatement catPs = null;
-	private static PreparedStatement reviewPs = null;
+	private static String salesRank = "";
+	private static String catCount = "";
+	private static String reviewTotal = "";
+	private static String reviewDownload = "";
+	private static String reviewAvgRating = "";
 	
 	public static void importItems() {
 		try {
 			reader = new BufferedReader(new FileReader(Constant.SOURCE));
-		} catch (FileNotFoundException e) {
+			itemWriter = new BufferedWriter(new FileWriter(Constant.ITEM_DEST));
+			catWriter = new BufferedWriter(new FileWriter(Constant.CAT_DEST));
+			reviewWriter = new BufferedWriter(new FileWriter(Constant.REVIEW_DEST));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		// ignore description information and id=0 product
 		ignore(Constant.IGNORE);
-		
-		// open connection
-		connection = DbUtil.openConn();
 		
 		// process content
 		String line = null;
@@ -55,81 +46,105 @@ public class Importer {
 				line = reader.readLine();
 			} while (line != null); // until end of file
 			
-			DbUtil.closeConn(connection);
 			System.out.println("\nsnap amazon meta insert completed. Total items: " + itemCount);
+			reader.close();
+			
+			itemWriter.close();
+			catWriter.close();
+			reviewWriter.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private static void itemProcess() throws Exception {
-		id = getInt(reader.readLine());				// id 
+		id = getText(reader.readLine());				// id 
 		asin = getText(reader.readLine());			// asin		
-		title = getText(reader.readLine());			// title
+		String tmp = reader.readLine();
+		if (tmp.trim().equals("discontinued product")) {
+			return;
+		}
+		title = getText(tmp);						// title
 		group = getText(reader.readLine());			// group
-		salesRank = getLong(reader.readLine());		//salesrank
+		salesRank = getText(reader.readLine());		//salesrank
 		reader.readLine();							// similar, not used
 		
 		// categories
-		catCount = getInt(reader.readLine());		// category count
-		
-		catPs = connection.prepareStatement(catSql);
+		catCount = getText(reader.readLine());		// category count
+		int count = Integer.parseInt(catCount);
 		// read category lines
 		String catLine = null;
-		for (int i = 0; i < catCount; i++) {
-			catLine = reader.readLine().trim();
+		StringBuilder curCat = new StringBuilder();
+		for (int i = 0; i < count; i++) {
+			curCat.delete(0, curCat.length());
+			
+			catLine = reader.readLine();
 			String[] cats = catLine.split("\\|");
-			// insert categories
-			for (int j = 1; j < cats.length; j++) {
-				String cat = cats[j];
-				String catName = cat.substring(0, cat.indexOf('['));
-				int catId = Integer.parseInt(cat.substring(cat.indexOf('[')+1, cat.indexOf(']')));
-				catPs.setInt(1, catId);
-				catPs.setString(2, catName);
-				catPs.setInt(3, j);
-				catPs.setInt(4, id);
-				catPs.executeUpdate();
+			
+			int cat_level = cats.length > 8 ? 8 : cats.length;	// 最多考虑7层cat
+			// set variables
+			curCat.append(id);
+			for (int l = 1; l < cat_level; l++) {
+				String cat = cats[l];
+				String catName = cat; //cat.substring(0, cat.indexOf('['));
+				/*
+				 * 在source文件中，有些只有分类编号，没有具体的名字
+				 */
+				//int catId = Integer.parseInt(cat.substring(cat.indexOf('[')+1, cat.indexOf(']')));
+				curCat.append(Constant.SP).append(catName);
 			}
+			// insert categories
+			catWriter.write(curCat.toString());
+			catWriter.newLine();
 		}
-		System.out.println("item " + id + " categories inserted " + catCount);
-		catPs.close();
+		//System.out.println("item " + id + " categories inserted " + catCount);
 		
 		// review  
 		String[] splits = reader.readLine().split(":");
 		reviewTotal = getReviewTotal(splits); 			// review total
 		reviewDownload = getReviewDownload(splits);		// review download
 		reviewAvgRating = getReviewAvgRating(splits);	// review avg rating
+		int reviewCount = Integer.parseInt(reviewDownload);
 		
-		reviewPs = connection.prepareStatement(reviewSql);
 		// read review lines
 		String reviewLine = null;
-		for (int i = 0; i < reviewTotal; i++) {
+		StringBuilder reviewBuilder = new StringBuilder();
+		for (int i = 0; i < reviewCount; i++) {		// 取download的条数
+			reviewBuilder.delete(0, reviewBuilder.length());
+			
 			// insert reviews
 			reviewLine = reader.readLine().trim();
 			String[] reviewEles = reviewLine.split(" +");
-			reviewPs.setInt(1, id);
-			reviewPs.setString(2, reviewEles[0]);
-			reviewPs.setString(3, reviewEles[2]);
-			reviewPs.setInt(4, Integer.parseInt(reviewEles[4]));
-			reviewPs.setInt(5, Integer.parseInt(reviewEles[6]));
-			reviewPs.setInt(6, Integer.parseInt(reviewEles[8]));
-			reviewPs.executeUpdate();
+			
+			reviewBuilder.append(id)
+				.append(Constant.SP).append(reviewEles[0])
+				.append(Constant.SP).append(reviewEles[2])
+				.append(Constant.SP).append(reviewEles[4])
+				.append(Constant.SP).append(reviewEles[6])
+				.append(Constant.SP).append(reviewEles[8]);
+			//reviewPs.executeUpdate();
+			reviewWriter.write(reviewBuilder.toString());
+			reviewWriter.newLine();
 		}
-		System.out.println("item " + id + " reviews inserted " + reviewTotal);
-		reviewPs.close();
+		//System.out.println("item " + id + " reviews inserted " + reviewTotal);
 		
-		// item
-		itemPs = connection.prepareStatement(itemSql);
-		itemPs.setInt(1, id);
-		itemPs.setString(2, asin);
-		itemPs.setString(3, title);
-		itemPs.setString(4, group);
-		itemPs.setLong(5, salesRank);
-		itemPs.setInt(6, catCount);
-		itemPs.setInt(7, reviewTotal);
-		itemPs.setInt(8, reviewDownload);
-		itemPs.setFloat(9, reviewAvgRating);
-		itemPs.executeUpdate();
+		StringBuilder itemBuilder = new StringBuilder();
+		itemBuilder.append(id)
+			.append(Constant.SP).append(asin)
+			//.append(Constant.SP).append(title)
+			.append(Constant.SP).append(group)
+			.append(Constant.SP).append(salesRank)
+			.append(Constant.SP).append(catCount)
+			.append(Constant.SP).append(reviewTotal)
+			.append(Constant.SP).append(reviewDownload)
+			.append(Constant.SP).append(reviewAvgRating);
+		itemWriter.write(itemBuilder.toString());
+		itemWriter.newLine();
+		
+		itemWriter.flush();
+		catWriter.flush();
+		reviewWriter.flush();
 		
 		System.err.println("item " + id + " inserted completed.\n");
 	}
@@ -152,16 +167,19 @@ public class Importer {
 	private static String getText(String line) {
 		return line.split(":")[1].trim();
 	}
-	private static int getReviewTotal(String[] split) {
-		return Integer.parseInt(split[2].trim().split(" ")[0].trim());
+	private static String getReviewTotal(String[] split) {
+		return split[2].trim().split(" +")[0];
 	}
-	private static int getReviewDownload(String[] split) {
-		return Integer.parseInt(split[3].trim().split(" ")[0].trim());
+	private static String getReviewDownload(String[] split) {
+		return split[3].trim().split(" +")[0];
 	}
-	private static float getReviewAvgRating(String[] split) {
-		return Float.parseFloat(split[4].trim());
+	private static String getReviewAvgRating(String[] split) {
+		return split[4].trim();
 	}
 	
+	public static void main(String[] args) {
+		importItems();
+	}
 	
 	
 }

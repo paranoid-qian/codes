@@ -24,7 +24,7 @@ public class DbUtil {
 		}
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("success load mysql driver");
+			System.out.println("success load mysql driver\n");
 			Connection connection = DriverManager.getConnection(CONN_URL, USERNAME, PASSWORD);
 			return connection;
 		} catch (Exception e) {

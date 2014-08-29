@@ -29,7 +29,7 @@ public class AttrValueUtil {
 					connection = DbUtil.openConn();
 					
 					values = new ArrayList<String>();
-					String sql = "SELECT `"+ attr +"` FROM `"+ tableName +"` GROUP BY `"+ attr +"`;";
+					String sql = "SELECT `"+ attr +"` FROM `"+ tableName +"` WHERE `"+ attr+ "` is not null GROUP BY `"+ attr +"`;";
 					PreparedStatement ps =  connection.prepareStatement(sql);
 					ResultSet rs = ps.executeQuery();
 					if (rs.first()) {
@@ -66,7 +66,7 @@ public class AttrValueUtil {
 			if (!new File(Constant.SERI_PATH + table + Constant.DOT + attr + Constant.SERI_POSTFIX).exists()) {
 				return null;
 			}
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Constant.SERI_PATH +  table + Constant.DOT + attr + "Constant.SERI_POSTFIX"));
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Constant.SERI_PATH +  table + Constant.DOT + attr + Constant.SERI_POSTFIX));
 			System.out.println("从cache反序列化 " + table + Constant.DOT + attr + "离散值域 completed.\n");
 			return (List<String>)ois.readObject();
 		} catch (Exception e) {
@@ -78,8 +78,8 @@ public class AttrValueUtil {
 	
 	// test
 	public static void main(String[] args) {
-		String[] attrs = {"cat_level"};
-		List<List<String>> list = getAttrsValues("category", Arrays.asList(attrs));
+		String[] attrs = {"rating"};
+		List<List<String>> list = getAttrsValues("review", Arrays.asList(attrs));
 		for (List<String> list2 : list) {
 			for (String s : list2) {
 				System.out.println(s);
