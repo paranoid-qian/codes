@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Aggregator {
@@ -20,7 +19,7 @@ public class Aggregator {
 	}
 	
 	public static void agg(List<String> attrValueComposition, String tableName, String fileName) throws SQLException {
-		dumpInfo(fileName, attrValueComposition.size());
+		dumpInfo(fileName, attrValueComposition);
 		
 		// label
 		for (String comp : attrValueComposition) {
@@ -33,15 +32,16 @@ public class Aggregator {
 			System.out.println(sql);
 			ResultSet rs = ps.executeQuery();
 			
-			StringBuilder ids = new StringBuilder();
+			//StringBuilder ids = new StringBuilder();
+			List<String> rst = new ArrayList<String>();
 			if (rs.first()) {
 				do {
-					ids.append(rs.getInt(1)).append(" ");
+					//ids.append(rs.getInt(1)).append(" ");
+					rst.add(rs.getInt(1) + " " + label);
 				} while (rs.next());
-			} else {
-				ids.append("0");
 			}
-			dumpResult(fileName, (label++ + " [" + comp + "]"), ids.toString());
+			dumpResult(fileName, rst);
+			label++;
 		}
 		
 		// label -> 0
@@ -50,7 +50,7 @@ public class Aggregator {
 		System.out.println("aggregate completed.\n");
 	}
 	
-	public static void agg(List<String> attrValueComposition, String tableName1, String tableName2, String fileName) throws SQLException {
+	/*public static void agg(List<String> attrValueComposition, String tableName1, String tableName2, String fileName) throws SQLException {
 		dumpInfo(fileName, attrValueComposition.size());
 		
 		// label
@@ -80,7 +80,7 @@ public class Aggregator {
 		
 		System.out.println("aggregate completed.\n");
 		
-	}
+	}*/
 	
 	public static void agg(List<String>	itemAttrs, List<String>	catAttrs, List<String>	reviewAttrs) {
 		
@@ -108,25 +108,28 @@ public class Aggregator {
 		return rst;
 	}
 	
-	private static void dumpResult(String fileName, String label, String ids) {
+	private static void dumpResult(String fileName, List<String> idLabelList) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new java.io.File(Constant.AGGOUTPUT_FOLDER + fileName), true)); // append
-			writer.write(label);	// label
-			writer.newLine();
-			
-			writer.write(ids);		// ids
-			writer.newLine();
-			writer.newLine();
+			for (String  idLabel: idLabelList) {
+				writer.write(idLabel);		// id label
+				writer.newLine();
+			}
 			writer.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void dumpInfo(String fileName, int labelCount) {
+	private static void dumpInfo(String fileName, List<String> attrValueComposition) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new java.io.File(Constant.AGGOUTPUT_FOLDER + fileName), true)); // append
-			writer.write(Integer.toString(labelCount));	// label
+			writer.write(Integer.toString(attrValueComposition.size()));	// label
+			writer.newLine();
+			int count = 0;
+			for (String attrValue : attrValueComposition) {
+				writer.write(count++ + ":[" + attrValue + "] ");
+			}
 			writer.newLine();
 			writer.flush();
 		} catch (Exception e) {
@@ -140,7 +143,7 @@ public class Aggregator {
 		int i = min;
 		String value = "";
 		while (i <= max) {
-			value  = "`"+ tableName +"`.`"+ attr +"`>="+ i +" AND `"+ tableName +"`.`"+ attr +"`<="+ (i+step) +"";
+			value  = "`"+ tableName +"`.`"+ attr +"`>="+ i +" AND `"+ tableName +"`.`"+ attr +"`<"+ (i+step) +"";
 			values.add(value);
 			i += step;
 		}

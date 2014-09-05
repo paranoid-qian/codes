@@ -28,6 +28,23 @@ public class Main {
 		
 	}
 	
+	public static void processGroup() {
+		String[] itemAttrs = {"group"};
+		// 构造filename
+		String fileName = "group.dat";
+		try {
+			List<String> list = Arrays.asList(itemAttrs);
+			//获取attr可能取值
+			List<List<String>> attrsValues = AttrValueUtil.getAttrsValues(DbUtil.ITEM_TABLE, list); // 一个attr对应一个inner list
+			// 组合
+			List<String> attrValueComposition = Aggregator.compositeAttrValue(attrsValues); // 组合后变成["`item`.`attr1`='1' AND `attr2`='1'", "`attr1`='2' AND `attr2`='3', ..."]
+			Aggregator.agg(attrValueComposition, DbUtil.ITEM_TABLE, fileName);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	// test
 	public static void main(String[] args) {
