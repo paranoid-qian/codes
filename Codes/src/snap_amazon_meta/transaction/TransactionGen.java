@@ -24,7 +24,7 @@ public class TransactionGen {
 	
 	private static int transCount = 0;
 	private static int edgeCount = 0;
-	private static final String TRANSACTION_DEST = "E:\\斯坦福snap project数据集\\transaction\\transaction_debug.txt";
+	private static final String TRANSACTION_DEST = "E:\\斯坦福snap project数据集\\transaction\\transaction.txt";
 	private static BufferedWriter bWriter = null;
 	static {
 		try {
@@ -63,6 +63,7 @@ public class TransactionGen {
 			System.out.println(edgeCount + " edge has been loaded.");
 			
 			//Arrays.fill(transaction, 0);
+			transaction.clear();
 			
 			edge = EdgeEnumerator.nextEdge();
 			
@@ -138,12 +139,14 @@ public class TransactionGen {
 				
 				// write to file
 				try {
-					bWriter.write("("+ edge.getFrom() + "," + edge.getTo() + ")|");
-					for (int i : transaction) {
-						bWriter.write(i + " ");
+					if (!transaction.isEmpty()) {
+						//bWriter.write("("+ edge.getFrom() + "," + edge.getTo() + ")|");
+						for (int i : transaction) {
+							bWriter.write(i + " ");
+						}
+						bWriter.newLine();
+						bWriter.flush();
 					}
-					bWriter.newLine();
-					bWriter.flush();
 				} catch (Exception e) {
 					// TODO: handle exception
 				}

@@ -10,7 +10,7 @@ import snap_amazon_meta.util.DbUtil;
 
 public class NodeEntity {
 	
-	private static HashMap<Integer, NodeEntity> cache = new HashMap<Integer, NodeEntity>();
+	//private static HashMap<Integer, NodeEntity> cache = new HashMap<Integer, NodeEntity>();
 	
 	private static Connection connection = null;
 	static {
@@ -113,7 +113,15 @@ public class NodeEntity {
 			if (rs.first()) {
 				item = new NodeEntity();
 				item.setItemId(rs.getInt("item_id"));
-				item.setGroup(rs.getString("group"));
+				String group = rs.getString("group");
+				// 处理group格式
+				if (group.indexOf('[') == 0) {
+					group = "";
+				} else if (group.contains("[")) {
+					group = group.substring(0, group.indexOf('['));
+				}
+						
+				item.setGroup(group);
 				item.setSalesrank(rs.getInt("salesrank"));
 				item.setReviewAvgRating(rs.getFloat("review_avg_rating"));
 			}
@@ -122,7 +130,7 @@ public class NodeEntity {
 			e.printStackTrace();
 		}
 		
-		sql = "SELECT `cat_1`, `cat_2`, `cat_3` FROM `category` " +
+		sql = "SELECT `cat_3` FROM `category` " +
 				"WHERE `category`.`item_id` = ? limit 1";
 		try {
 			PreparedStatement ps = connection.prepareStatement(sql);
@@ -130,9 +138,16 @@ public class NodeEntity {
 			//ps.setInt(2, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.first()) {
-				item.setCat_1(rs.getString("cat_1"));
-				item.setCat_2(rs.getString("cat_2"));
-				item.setCat_3(rs.getString("cat_3"));
+				//item.setCat_1(rs.getString("cat_1"));
+				//item.setCat_2(rs.getString("cat_2"));
+				String cat3 = rs.getString("cat_3");
+				// 处理格式
+				if (cat3 == null || cat3.equals("") || cat3.indexOf('[') == 0) {
+					cat3 = "";
+				} else if (cat3.contains("[")) {
+					cat3 = cat3.substring(0, cat3.indexOf('['));
+				}
+				item.setCat_3(cat3);
 				//item.setCat_4(rs.getString("cat_4"));
 				//cache.put(item.getItemId(), item);
 			}
