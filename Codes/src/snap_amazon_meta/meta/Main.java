@@ -1,8 +1,11 @@
-package snap_amazon_meta;
+package snap_amazon_meta.meta;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+
+import snap_amazon_meta.util.Constant;
+import snap_amazon_meta.util.DbUtil;
 
 public class Main {
 	

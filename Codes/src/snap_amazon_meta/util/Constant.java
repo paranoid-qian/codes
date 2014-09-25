@@ -1,4 +1,4 @@
-package snap_amazon_meta;
+package snap_amazon_meta.util;
 
 public interface Constant {
 	

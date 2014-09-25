@@ -1,10 +1,12 @@
-package snap_amazon_meta;
+package snap_amazon_meta.meta;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import snap_amazon_meta.util.Constant;
 
 public class Importer {
 	private static BufferedReader reader;

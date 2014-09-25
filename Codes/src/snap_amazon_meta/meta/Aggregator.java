@@ -1,4 +1,4 @@
-package snap_amazon_meta;
+package snap_amazon_meta.meta;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import snap_amazon_meta.util.Constant;
+import snap_amazon_meta.util.DbUtil;
 
 public class Aggregator {
 	

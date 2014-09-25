@@ -1,4 +1,4 @@
-package snap_amazon_meta;
+package snap_amazon_meta.meta;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import snap_amazon_meta.util.Constant;
+import snap_amazon_meta.util.DbUtil;
 
 public class AttrValueUtil {
 	

@@ -1,4 +1,4 @@
-package snap_amazon_meta;
+package snap_amazon_meta.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,7 +24,7 @@ public class DbUtil {
 		}
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("success load mysql driver\n");
+			//System.out.println("success load mysql driver\n");
 			Connection connection = DriverManager.getConnection(CONN_URL, USERNAME, PASSWORD);
 			return connection;
 		} catch (Exception e) {
