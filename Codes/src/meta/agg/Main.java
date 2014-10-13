@@ -1,11 +1,12 @@
-package snap_amazon_meta.meta;
+package meta.agg;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import snap_amazon_meta.util.Constant;
-import snap_amazon_meta.util.DbUtil;
+import meta.util.Constant;
+import meta.util.DbUtil;
+
 
 public class Main {
 	
@@ -13,7 +14,7 @@ public class Main {
 		String[] itemAttrs = {"group"};
 		// 构造filename
 		String fileName = "group.salesrank_step("+ Constant.rankStep +").dat";
-		try {
+		/*try {
 			List<String> list = Arrays.asList(itemAttrs);
 			
 			//获取attr可能取值
@@ -27,14 +28,14 @@ public class Main {
 			Aggregator.agg(attrValueComposition, DbUtil.ITEM_TABLE, fileName);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 	
 	public static void processGroup() {
 		String[] itemAttrs = {"group"};
 		// 构造filename
-		String fileName = "group.dat";
+		/*String fileName = "group.dat";
 		try {
 			List<String> list = Arrays.asList(itemAttrs);
 			//获取attr可能取值
@@ -44,7 +45,7 @@ public class Main {
 			Aggregator.agg(attrValueComposition, DbUtil.ITEM_TABLE, fileName);
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 	

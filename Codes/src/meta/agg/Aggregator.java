@@ -1,4 +1,4 @@
-package snap_amazon_meta.meta;
+package meta.agg;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,8 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import snap_amazon_meta.util.Constant;
-import snap_amazon_meta.util.DbUtil;
+import meta.util.Constant;
+import meta.util.DbUtil;
+
 
 public class Aggregator {
 	
@@ -18,7 +19,7 @@ public class Aggregator {
 	private static Connection connection;
 
 	static {
-		connection = DbUtil.openConn();
+		//connection = DbUtil.openConn();
 	}
 	
 	public static void agg(List<String> attrValueComposition, String tableName, String fileName) throws SQLException {

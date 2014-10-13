@@ -1,4 +1,4 @@
-package snap_amazon_meta.transaction;
+package meta.transaction;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import snap_amazon_meta.attributes.AttrValPairGen;
-import snap_amazon_meta.attributes.NodeEntity;
+import meta.attributes.AttrValPairGen;
+import meta.attributes.EdgeAttrPair;
+import meta.attributes.NodeEntity;
+import meta.util.Constant;
+
 import snap_amazon_meta.network.EdgeEnumerator;
 import snap_amazon_meta.network.EdgePair;
-import snap_amazon_meta.util.Constant;
 
 public class TransactionGen {
 	
@@ -96,46 +98,84 @@ public class TransactionGen {
 				// discontinued product
 				// discard from transaction
 			} else {
-				if(from.getGroup().equals(to.getGroup())) {
-					if (pairMap.get("group").containsKey(from.getGroup())) {
-						int index = pairMap.get("group").get(from.getGroup());
+				String key = "";
+				
+				// group
+				if(from.getGroup()!=null && to.getGroup()!=null) {
+					key = EdgeAttrPair.key(from.getGroup(), to.getGroup());
+					if (pairMap.get("group").containsKey(key)) {
+						int index = pairMap.get("group").get(key);
 						transaction.add(index);
 					} else {
-						continue;
+						key = EdgeAttrPair.key(to.getGroup(), from.getGroup());
+						if (pairMap.get("group").containsKey(key)) {
+							int index = pairMap.get("group").get(key);
+							transaction.add(index);
+						} else {
+							continue;
+						}
 					}
 					
+				} else {
+					continue;
 				}
-				if (from.getReviewAvgRating() == to.getReviewAvgRating()) {
-					int index = pairMap.get("review_avg_rating").get(Float.toString(from.getReviewAvgRating()));
-					transaction.add(index);
-				}
-				/*if (from.getCat_1() !=null && to.getCat_1() != null && from.getCat_1().equals(to.getCat_1())) {
-					int index = pairMap.get("cat_1").get(from.getCat_1());
-					transaction.add(index);
-				}
-				if (from.getCat_2() !=null && to.getCat_2() != null &&  from.getCat_2().equals(to.getCat_2())) {
-					int index = pairMap.get("cat_2").get(from.getCat_2());
-					transaction.add(index);
-				}*/
-				if (from.getCat_3() !=null && to.getCat_3() != null &&  from.getCat_3().equals(to.getCat_3())) {
-					if (pairMap.get("cat_3").containsKey(from.getCat_3())) {
-						int index = pairMap.get("cat_3").get(from.getCat_3());
+				
+				// review avg rating
+				if (from.getReviewAvgRating()>=0 && to.getReviewAvgRating()>=0) {
+					key = EdgeAttrPair.key(Float.toString(from.getReviewAvgRating()), Float.toString(to.getReviewAvgRating()));
+					if (pairMap.get("review_avg_rating").containsKey(key)) {
+						int index = pairMap.get("review_avg_rating").get(key);
 						transaction.add(index);
 					} else {
-						continue;
+						key = EdgeAttrPair.key(Float.toString(to.getReviewAvgRating()), Float.toString(from.getReviewAvgRating()));
+						if (pairMap.get("review_avg_rating").containsKey(key)) {
+							int index = pairMap.get("review_avg_rating").get(key);
+							transaction.add(index);
+						} else {
+							continue;
+						}
 					}
 					
+				} else {
+					continue;
 				}
-//				if (from.getCat_4() !=null && to.getCat_4() != null && from.getCat_4().equals(to.getCat_4())) {
-//					int index = pairMap.get("cat_4").get(from.getCat_4());
-//					transaction[index] = 1;
-//				}
-				if (NodeEntity.isSalesrankOverlap(from, to, 10000)) {
-					int key = from.getSalesrank()/10000 * 10000 - 1;
-					Map<String, Integer> aMap = pairMap.get("salesrank"); // 以区间的start值作为inner-key
-					int index = aMap.get(Integer.toString(key));
-					transaction.add(index);
+				
+				// cat_3
+				if (from.getCat_3()!=null && to.getCat_3()!=null) {
+					key = EdgeAttrPair.key(from.getCat_3(), to.getCat_3());
+					if (pairMap.get("cat_3").containsKey(key)) {
+						int index = pairMap.get("cat_3").get(key);
+						transaction.add(index);
+					} else {
+						key = EdgeAttrPair.key(to.getCat_3(), from.getCat_3());
+						if (pairMap.get("cat_3").containsKey(key)) {
+							int index = pairMap.get("cat_3").get(key);
+							transaction.add(index);
+						} else {
+							continue;
+						}
+					}
+					
+				} else {
+					continue;
 				}
+				
+				// salesrank
+				if (true) {
+					key = EdgeAttrPair.key(Integer.toString(from.getSalesrank()/10000 * 10000 - 1), Integer.toString(to.getSalesrank()/10000 * 10000 - 1));
+					if (pairMap.get("salesrank").containsKey(key)) {
+						int index = pairMap.get("salesrank").get(key);
+						transaction.add(index);
+					} else {
+						key = EdgeAttrPair.key(Integer.toString(to.getSalesrank()/10000 * 10000 - 1), Integer.toString(from.getSalesrank()/10000 * 10000 - 1));
+						if (pairMap.get("salesrank").containsKey(key)) {
+							int index = pairMap.get("salesrank").get(key);
+							transaction.add(index);
+						} else {
+							continue;
+						}
+					}
+				} 
 				
 				// write to file
 				try {
@@ -152,7 +192,7 @@ public class TransactionGen {
 				}
 			}
 			
-			System.out.println(++transCount + " transaction has been written into file.");
+			//System.out.println(++transCount + " transaction has been written into file.");
 		}
 		
 	}
@@ -183,7 +223,7 @@ public class TransactionGen {
 			String line = bReader.readLine();
 			if (line != null && !line.equals("")) {
 				String[] sp = line.split("\\" + Constant.SP);
-				map.put(sp[0], Integer.parseInt(sp[1]));
+				map.put(EdgeAttrPair.key(sp[0], sp[1]), Integer.parseInt(sp[2]));   // key(string) - value(int)
 			} else {
 				break;
 			}
@@ -198,7 +238,7 @@ public class TransactionGen {
 			String line = bReader.readLine();
 			if (line != null && !line.equals("")) {
 				String[] sp = line.split("\\" + Constant.SP);
-				map.put(sp[0], Integer.parseInt(sp[1])); // 取区间的start值作为inner key
+				map.put(EdgeAttrPair.key(sp[0], sp[1]), Integer.parseInt(sp[2])); // 取区间的start值作为inner key
 			} else {
 				break;
 			}

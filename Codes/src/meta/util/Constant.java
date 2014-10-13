@@ -1,6 +1,9 @@
-package snap_amazon_meta.util;
+package meta.util;
 
 public interface Constant {
+	
+	public static final String DB_TABLE_SNAP = "snap_amazon_meta";
+	public static final String DB_TABLE_BREAST_CANCER = "breast_cancer";
 	
 	// import related
 	public static final String SOURCE = "E:\\斯坦福snap project数据集\\amazon-meta.txt\\amazon-meta.txt";

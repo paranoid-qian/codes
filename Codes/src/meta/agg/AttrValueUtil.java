@@ -1,4 +1,4 @@
-package snap_amazon_meta.meta;
+package meta.agg;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import snap_amazon_meta.util.Constant;
-import snap_amazon_meta.util.DbUtil;
+import meta.util.Constant;
+import meta.util.DbUtil;
+
 
 public class AttrValueUtil {
 	
@@ -29,7 +30,7 @@ public class AttrValueUtil {
 				if (values != null){ // got cache
 					// do noting
 				} else {			 // no cache
-					connection = DbUtil.openConn();
+					//connection = DbUtil.openConn();
 					
 					values = new ArrayList<String>();
 					String sql = "SELECT `"+ attr +"` FROM `"+ tableName +"` WHERE `"+ attr+ "` is not null GROUP BY `"+ attr +"`;";

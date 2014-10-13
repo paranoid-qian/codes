@@ -25,11 +25,10 @@ public class Main {
 			try {
 				String line = bReader.readLine();
 				line = bReader.readLine();
-				JSONObject jo = new JSONObject(line);
+				System.out.println(line);
+				line = bReader.readLine();
 				System.out.println(line);
 			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 		}

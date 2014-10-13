@@ -1,4 +1,4 @@
-package snap_amazon_meta.attributes;
+package meta.attributes;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,9 +10,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import snap_amazon_meta.util.Constant;
-import snap_amazon_meta.util.DbUtil;
+import meta.tableconstants.BreastCancerTable;
+import meta.util.Constant;
+import meta.util.DbUtil;
+
 
 /**
  * 生成attr-val对，并把对写入到文件中
@@ -21,9 +25,14 @@ import snap_amazon_meta.util.DbUtil;
  */
 public class AttrValPairGen {
 	
-	public static int incrementId = 0;
+	/*
+	 * 根据实际数据表修改
+	 */
+	public static final String dbName = Constant.DB_TABLE_BREAST_CANCER;
+	public static final String ATTR_VAL_PAIR_DEST_FOLDER = "E:\\weka\\dataset\\0-1-dataset\\breast-cancer\\attr-pairs\\";
 	
-	public static final String ATTR_VAL_PAIR_DEST_FOLDER = "E:\\斯坦福snap project数据集\\transaction\\attr_val_pairs\\";
+	
+	public static int incrementId = 0;
 	public static final String POSTFIX = "_pairs.txt";
 	public static BufferedWriter bWriter = null;
 	public static PreparedStatement ps = null;
@@ -38,17 +47,22 @@ public class AttrValPairGen {
 	public static void genDiscreteAttrPairs(String table, String attr) throws SQLException, IOException {
 		bWriter = new BufferedWriter(new FileWriter(new File(ATTR_VAL_PAIR_DEST_FOLDER + attr + POSTFIX), true)); // append mode
 		
-		Connection connection = DbUtil.openConn();
+		Connection connection = DbUtil.openConn(dbName);
 		String sql = "SELECT `"+ attr +"` FROM `"+ table +"` WHERE `"+ attr+ "` is not null GROUP BY `"+ attr +"`;";
 		ps = connection.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		if (rs.first()) {
-			//Map<String, Integer> map = new HashMap<String, Integer>();
-			String last = "";
+			List<String> list = new ArrayList<String>();
+			
+			//String last = "";
 			do {
 				String val = rs.getString(attr);
+				if (val.equals("?")) {
+					continue;
+				}
+				list.add(val);
 				//map.put(val, incrementId++);
-				/* 去除域中数字 ， 如果只有数字，则ignore */
+				/* 去除域中数字 ， 如果只有数字，则ignore 
 				if (val.indexOf('[') == 0) {
 					// 只有数字，无效的域
 					continue;
@@ -61,13 +75,26 @@ public class AttrValPairGen {
 						// 一个类别
 						continue;
 					} else {
-						bWriter.write(val + Constant.SP + incrementId++);
-						bWriter.newLine();
+						list.add(val);
 					}
 					last = val;
+				}*/
+			
+			} while (rs.next());
+			
+			// 组合
+			/*for (int i = 0; i < list.size(); i++) {
+				for (int j = i; j < list.size(); j++) {
+					bWriter.write(list.get(i) + Constant.SP + list.get(j) + Constant.SP + incrementId++);
+					bWriter.newLine();
 				}
 				
-			} while (rs.next());
+			}*/
+			for (int i = 0; i < list.size(); i++) {
+				bWriter.write(list.get(i) + Constant.SP + incrementId++);
+				bWriter.newLine();
+			}
+			
 		}
 		System.out.println("success write attr-val-id tuples for " + attr);
 		System.out.println("next id = " + incrementId);
@@ -82,13 +109,20 @@ public class AttrValPairGen {
 		int min = -1; 
 		int max = 3798351;
 		
-		int i = min;
-		String val = null;
-		while (i <= max) {
-			val  = i + Constant.SP + incrementId++; // [left - id
-			bWriter.write(val);
-			bWriter.newLine();
-			i += step;
+		int s = min;
+		List<Integer> list = new ArrayList<Integer>();
+		
+		while (s <= max) {
+			list.add(s);
+			s += step;
+		}
+		// 组合成pair
+		for (int i = 0; i < list.size(); i++) {
+			for (int j = i; j < list.size(); j++) {
+				bWriter.write(list.get(i) + Constant.SP + list.get(j) + Constant.SP + incrementId++);
+				bWriter.newLine();
+			}
+			
 		}
 		System.out.println("success write attr-val-id tuples for " + attr);
 		System.out.println("next id = " + incrementId);
@@ -99,19 +133,11 @@ public class AttrValPairGen {
 	
 	public static void main(String[] args) {
 		try {
-			genDiscreteAttrPairs("item", "group");
-			genDiscreteAttrPairs("item", "review_avg_rating");
-			//genDiscreteAttrPairs("category", "cat_1");
-			//genDiscreteAttrPairs("category", "cat_2");
-			genDiscreteAttrPairs("category", "cat_3");
+			for (String attr : BreastCancerTable.columns) {
+				genDiscreteAttrPairs(BreastCancerTable.table_name, attr);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			genContinousAttrPairs("item", "salesrank", 10000);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
