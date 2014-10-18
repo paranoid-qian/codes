@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="E:/myeclipse/sunweb/web-app/WEB-INF/lib/mysql-connector-java-3.1.11-bin.jar"/>
 	<classpathentry kind="lib" path="D:/开发软件/java/ostermillerutils-1.08.02-bin/ostermillerutils-1.08.02/ostermillerutils-1.08.02.jar"/>
 	<classpathentry kind="lib" path="C:/Users/paranoid/git/codes/Codes/org.json.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Weka-3-6/weka.jar" sourcepath="C:/Program Files/Weka-3-6/weka-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
