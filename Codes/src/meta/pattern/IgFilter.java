@@ -2,12 +2,12 @@ package meta.pattern;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import meta.attributes.AttributeIndexs;
 import meta.entity.AttrValEntry;
+import meta.entity.AttributeIndexs;
 import meta.entity.Pattern;
-import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -23,7 +23,7 @@ public class IgFilter {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<Pattern> filter(Instances inss, Instances train, List<Pattern> pats, double threshold) throws IOException {
+	public static List<Pattern> filter(Instances inss, Instances train, List<Pattern> pats, int topk) throws IOException {
 		/* load instances and patterns */
 		//inss = loadDataSet(Constant.DATASET_ARFF);
 		//pats = PatternLoader.loadPattern();
@@ -33,11 +33,10 @@ public class IgFilter {
 		for (Pattern pat : pats) {
 			double gain = info - infoOfPattern(train, pat);
 			pat.setIg(gain);
-			if (gain >= threshold) {
-				rst.add(pat);
-			}
+			rst.add(pat);
 		}
-		return rst;
+		Collections.sort(rst);
+		return rst.subList(0, topk);
 	}
 	
 	

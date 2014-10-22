@@ -1,4 +1,4 @@
-package meta.attributes;
+package meta.entity;
 
 import java.util.HashMap;
 import java.util.Map;

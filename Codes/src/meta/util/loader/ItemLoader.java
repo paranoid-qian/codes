@@ -18,7 +18,7 @@ public class ItemLoader {
 	 * @throws IOException
 	 */
 	public static Map<String, Map<String, AttrValEntry>> loadItems() throws IOException {
-		Map<String, Map<String, AttrValEntry>> pairMap = new HashMap<String, Map<String,AttrValEntry>>();
+		Map<String, Map<String, AttrValEntry>> pairMap = new HashMap<String, Map<String,AttrValEntry>>(9);
 		for (String attr : Constant.DB_TABLE.columns()) {
 			Map<String, AttrValEntry> map = new HashMap<String, AttrValEntry>();
 			BufferedReader bReader = new BufferedReader(new FileReader(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX));
@@ -26,7 +26,7 @@ public class ItemLoader {
 				String line = bReader.readLine();
 				if (line != null && !line.equals("")) {
 					String[] sp = line.split("\\" + Constant.SP);
-					map.put(sp[0], new AttrValEntry(Integer.parseInt(sp[1]), attr, sp[0]));   // key(string) - value(int)
+					map.put(sp[0], new AttrValEntry(Integer.parseInt(sp[1]), attr, sp[0]));   // value(string) - AttrValEntry
 				} else {
 					break;
 				}

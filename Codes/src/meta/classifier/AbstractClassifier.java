@@ -16,17 +16,17 @@ public abstract class AbstractClassifier {
 	/**
 	 * abstract method for evaluation classifier
 	 */
-	public abstract void evaluate();
+	public abstract void evaluate() throws Exception;
 	
 	
 	
-	protected Instances inss = null;
+	protected Instances data = null;
 	protected List<Pattern> pats = null;	
 	
 	
 	public AbstractClassifier() {
 		try {
-			inss = InstanceLoader.loadInstances(Constant.DATASET_ARFF);
+			data = InstanceLoader.loadInstances(Constant.DATASET_ARFF);
 			pats = PatternLoader.loadPattern();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -37,13 +37,14 @@ public abstract class AbstractClassifier {
 	/*
 	 * eval util
 	 */
-	protected String eval(Classifier classifier, Instances train, Instances test) throws Exception {
-		classifier.buildClassifier(train);	// build classifier according to train set
-	
+	protected double[] eval(Classifier classifier, Instances train, Instances test) throws Exception {
+		Classifier copiedClassifier = Classifier.makeCopy(classifier);
+		copiedClassifier.buildClassifier(train);
 		Evaluation eval = new Evaluation(train);	// build evaluator
-		eval.evaluateModel(classifier, test);
+		eval.evaluateModel(copiedClassifier, test);
 		
-		return eval.toSummaryString();
+		double[] rst = {eval.pctCorrect(), eval.correct(), eval.pctIncorrect(), eval.incorrect()};
+		return rst;
 	}
 	
 }

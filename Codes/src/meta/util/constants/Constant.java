@@ -21,8 +21,18 @@ public interface Constant {
 	/* pattern file path */
 	public static final String PATTRN_FILE = "E:\\weka\\dataset\\0-1-dataset\\breast-cancer\\pattern.txt";
 	
+	/* augment values */
+	public static final String FIT = "fit";
+	public static final String NO_FIT = "no-fit";
+	
+	
+	/* topk patterns */
+	public static final int TOP_K = 4;
+	
 	/* others */ 
 	public static final String DOT = ".";
 	public static final String SP = "|";
+	public static final String ADD = "+";
 	public static final String ITEM_FILE_POSTFIX = "_pairs.txt";
+	
 }

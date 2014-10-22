@@ -3,7 +3,7 @@ package meta.util.loader;
 import java.io.File;
 import java.io.IOException;
 
-import meta.attributes.AttributeIndexs;
+import meta.entity.AttributeIndexs;
 
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;

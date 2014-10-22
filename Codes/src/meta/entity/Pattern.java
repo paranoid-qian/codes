@@ -3,21 +3,23 @@ package meta.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import weka.core.Instance;
+
+import meta.util.constants.Constant;
+
 
 /**
  * frequent close pattern definition
  * @author paranoid
  *
  */
-public class Pattern {
+public class Pattern implements Comparable<Pattern>{
 	
 	/* pattern, 1 pat per line */
 	private List<AttrValEntry> entryList;
 	
 	/* pattern attr and value */
 	private String pAttr = null;
-	private String pVal = null;
-	
 	
 	/* pattern information gain value, default 0.0 */
 	private double ig = 0;
@@ -42,11 +44,14 @@ public class Pattern {
 		return pAttr;
 	}
 	
-	public String pValue() {
-		if (this.pVal == null) {
-			resolve();
+	public String pValue(Instance ins) {
+		for (AttrValEntry entry : entryList) {
+			// if one entry doesn't fit, return NO_FIT
+			if (!ins.stringValue(AttributeIndexs.get(entry.getAttr())).equals(entry.getVal())) {
+				return Constant.NO_FIT;
+			}
 		}
-		return pVal;
+		return Constant.FIT;
 	}
 	
 	
@@ -62,16 +67,18 @@ public class Pattern {
 	 * resolve pattern attr name and value
 	 */
 	private void resolve() {
-		StringBuilder name = new StringBuilder("p:");
-		StringBuilder value = new StringBuilder();
+		StringBuilder name = new StringBuilder("");
 		for (AttrValEntry entry : entryList) {
-			name.append(entry.getAttr() + "+");
-			value.append(entry.getVal() + "+");
+			name.append(entry.getAttr() + "=" + entry.getVal() + "&");
 		}
 		name.replace(name.length()-1, name.length(), "");
-		value.replace(value.length()-1, value.length(), "");
 		
 		this.pAttr = name.toString();
-		this.pVal = value.toString();
+	}
+
+	@Override
+	public int compareTo(Pattern o) {
+		return Double.compare(this.getIg(), o.getIg());
+				
 	}
 }
