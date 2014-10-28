@@ -24,6 +24,8 @@ public class Pattern implements Comparable<Pattern>{
 	/* pattern information gain value, default 0.0 */
 	private double ig = 0;
 	
+	/* global support value */
+	private int globalSupport;
 	
 	public Pattern() {
 		entryList = new ArrayList<AttrValEntry>();
@@ -63,6 +65,13 @@ public class Pattern implements Comparable<Pattern>{
 		return this.ig;
 	}
 	
+	public void setGlobalSupport(int support) {
+		this.globalSupport = support;
+	}
+	public int getGlobalSupport() {
+		return this.globalSupport;
+	}
+	
 	/*
 	 * resolve pattern attr name and value
 	 */
@@ -72,13 +81,13 @@ public class Pattern implements Comparable<Pattern>{
 			name.append(entry.getAttr() + "=" + entry.getVal() + "&");
 		}
 		name.replace(name.length()-1, name.length(), "");
-		
+	
 		this.pAttr = name.toString();
 	}
 
 	@Override
 	public int compareTo(Pattern o) {
-		return Double.compare(this.getIg(), o.getIg());
+		return Double.compare(o.getIg(), this.getIg());
 				
 	}
 }

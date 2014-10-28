@@ -23,7 +23,7 @@ public class IgFilter {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<Pattern> filter(Instances inss, Instances train, List<Pattern> pats, int topk) throws IOException {
+	public static List<Pattern> filter(Instances inss, Instances train, List<? extends Pattern> pats, int topk) throws IOException {
 		/* load instances and patterns */
 		//inss = loadDataSet(Constant.DATASET_ARFF);
 		//pats = PatternLoader.loadPattern();

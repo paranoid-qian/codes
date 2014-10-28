@@ -9,15 +9,15 @@ public class Main {
 	
 	public static void main(String[] args) {
 		AbstractClassifier c45 = new PatternClassifier(new J48());
-		AbstractClassifier svm = new PatternClassifier(new WLSVM());
-		AbstractClassifier naiveBayes = new PatternClassifier(new NaiveBayes());
+		//AbstractClassifier svm = new PatternClassifier(new WLSVM());
+		//AbstractClassifier naiveBayes = new PatternClassifier(new NaiveBayes());
 		
 		try {
 			c45.evaluate();
 			System.out.println("=================");
-			svm.evaluate();
+			//svm.evaluate();
 			System.out.println("=================");
-			naiveBayes.evaluate();
+			//naiveBayes.evaluate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

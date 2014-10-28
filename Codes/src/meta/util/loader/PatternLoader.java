@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import meta.entity.AttrValEntry;
+import meta.entity.CosinePattern;
 import meta.entity.Pattern;
 import meta.util.constants.Constant;
 
@@ -46,11 +47,43 @@ public class PatternLoader {
 				int itemId = Integer.parseInt(sp[i]);
 				pattern.addEntry(reverseMap.get(itemId));
 			}
+			String suppStr = sp[sp.length-ME_NUM];
+			pattern.setGlobalSupport(Integer.parseInt(suppStr.substring(1, suppStr.length()-1)));	// global support
 			patList.add(pattern);
 		}
 		return patList;
 	}
 	
+	
+	public static List<CosinePattern> loadCosinePattern() throws IOException {
+		bReader = new BufferedReader(new FileReader(Constant.COSINE_PATTERN_FILE));
+		if (reverseMap == null) {
+			reverseMap = ItemLoader.loadItemsByReverse();
+		}
+		List<CosinePattern> patList = new ArrayList<CosinePattern>();
+		String line = null;
+		while (true) {
+			line = bReader.readLine();
+			if (line == null || line.equals("")) {
+				break;
+			}
+			CosinePattern pattern = new CosinePattern();
+			String[] sp = line.split("\\s+");
+			for (int i = 0; i < sp.length-ME_NUM; i++) {
+				int itemId = Integer.parseInt(sp[i]);
+				pattern.addEntry(reverseMap.get(itemId));
+			}
+			String suppStr = sp[sp.length-ME_NUM];
+			pattern.setGlobalSupport(Integer.parseInt(suppStr.substring(1, suppStr.length()-1)));	// global support
+			
+			String cosineStr = sp[sp.length-1];
+			pattern.setCosine(Double.parseDouble(cosineStr));	// global cosine value
+			
+			patList.add(pattern);
+		}
+		
+		return patList;
+	}
 	
 	/*public static void main(String[] args) {
 		try {

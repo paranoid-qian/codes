@@ -33,7 +33,9 @@ public class PatternClassifier extends AbstractClassifier {
 			inss.stratify(numFolds);
 		}
 		// randomize instances and stratify train set / test set
-		Random rand = new Random(System.currentTimeMillis());
+		long s = System.currentTimeMillis();
+		System.out.println("random: " + s);
+		Random rand = new Random(s);
 		inss.randomize(rand);
 		
 		Evaluation eval = new Evaluation(inss);
@@ -49,10 +51,12 @@ public class PatternClassifier extends AbstractClassifier {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("---不添加pattern的分类结果：");
 		System.out.println(eval.toSummaryString());
-		System.out.println("precision: " + eval.precision(0) + "/" + eval.precision(1));
+		System.out.println(eval.toClassDetailsString());
+		/*System.out.println("precision: " + eval.precision(0) + "/" + eval.precision(1));
 		System.out.println("recall: " + eval.recall(0) + "/" + eval.recall(1));
-		System.out.println("recall: " + eval.fMeasure(0) + "/" + eval.fMeasure(1));
+		System.out.println("recall: " + eval.fMeasure(0) + "/" + eval.fMeasure(1));*/
 		
 		/********** after use pattern *************/
 		inss = new Instances(data);
@@ -82,24 +86,26 @@ public class PatternClassifier extends AbstractClassifier {
 			// augment pattern to inss
 			try {
 				train = TransactionAug.augmentDataset(augPatterns, train);
-				test = TransactionAug.augmentDataset(augPatterns, test);
+				//System.out.println(train);
+				//test = TransactionAug.augmentDataset(augPatterns, test);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 			
-			try {
+			/*try {
 				Classifier cls = Classifier.makeCopy(classifier);
 				cls.buildClassifier(train);
 				eval.evaluateModel(cls, test);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
+		System.out.println("---添加pattern的分类结果：");
 		System.out.println(eval.toSummaryString());
-		System.out.println("precision: " + eval.precision(0) + "/" + eval.precision(1));
+		System.out.println(eval.toClassDetailsString());
+		/*System.out.println("precision: " + eval.precision(0) + "/" + eval.precision(1));
 		System.out.println("recall: " + eval.recall(0) + "/" + eval.recall(1));
-		System.out.println("recall: " + eval.fMeasure(0) + "/" + eval.fMeasure(1));
+		System.out.println("recall: " + eval.fMeasure(0) + "/" + eval.fMeasure(1));*/
 		
 	}
-
 }
