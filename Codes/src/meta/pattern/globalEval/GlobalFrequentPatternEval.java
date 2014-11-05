@@ -5,6 +5,7 @@ import java.util.List;
 
 import meta.entity.Pattern;
 import meta.pattern.IgFilter;
+import meta.transaction.TransactionAug;
 import weka.core.Instances;
 
 public class GlobalFrequentPatternEval extends AbstractGlobalEval {
@@ -25,13 +26,19 @@ public class GlobalFrequentPatternEval extends AbstractGlobalEval {
 		// filter pattern
 		List<Pattern> augPatterns = null;
 		try {
-			 augPatterns = IgFilter.filter(inss, inss, pats, pats.size());
+			 augPatterns = IgFilter.filter(inss, inss, pats, 8);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for (Pattern pattern : augPatterns) {
-			System.out.println(pattern.pName() + "\t\t\t" + pattern.getGlobalSupport() + "\t\t\t" + pattern.getIg());
+		try {
+			inss = TransactionAug.augmentDataset(augPatterns, inss);
+			//System.out.println(inss);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		/*for (Pattern pattern : augPatterns) {
+			System.out.println(pattern.pName() + "\t\t\t" + pattern.getGlobalSupport() + "\t\t\t" + pattern.getIg());
+		}*/
 	}
 
 	

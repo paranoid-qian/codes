@@ -7,12 +7,12 @@ package meta.util.constants.table;
  */
 public interface DbTable {
 	
-	/* table columns */
+	/* table columns 
 	public String[] columns();
 	
-	/* table name */
+	 table name 
 	public String tableName();
 	
-	/* table class name */
-	public String className();
+	 table class name 
+	public String className();*/
 }

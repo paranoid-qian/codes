@@ -69,6 +69,7 @@ public class PatternClassifier extends AbstractClassifier {
 		for (int i = 0; i < numFolds; i++) {
 			Instances test = inss.trainCV(numFolds, i);
 			Instances train = inss.testCV(numFolds, i);
+			//Instances train = inss;							// 测试全dataset上的cover情况时使用
 			
 			// filter pattern
 			List<Pattern> augPatterns = null;
@@ -87,18 +88,18 @@ public class PatternClassifier extends AbstractClassifier {
 			try {
 				train = TransactionAug.augmentDataset(augPatterns, train);
 				//System.out.println(train);
-				//test = TransactionAug.augmentDataset(augPatterns, test);
+				test = TransactionAug.augmentDataset(augPatterns, test);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 			
-			/*try {
+			try {
 				Classifier cls = Classifier.makeCopy(classifier);
 				cls.buildClassifier(train);
 				eval.evaluateModel(cls, test);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}*/
+			}
 		}
 		System.out.println("---添加pattern的分类结果：");
 		System.out.println(eval.toSummaryString());

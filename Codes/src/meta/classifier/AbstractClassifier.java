@@ -26,9 +26,9 @@ public abstract class AbstractClassifier {
 	
 	public AbstractClassifier() {
 		try {
-			data = InstanceLoader.loadInstances(Constant.DATASET_ARFF);
-			pats = PatternLoader.loadPattern();
-		} catch (IOException e) {
+			data = InstanceLoader.loadInstances();
+			pats = PatternLoader.loadPattern(data);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

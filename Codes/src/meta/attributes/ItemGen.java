@@ -3,16 +3,16 @@ package meta.attributes;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import meta.util.DbUtil;
 import meta.util.constants.Constant;
+import meta.util.loader.InstanceLoader;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Discretize;
 
 
 /**
@@ -24,55 +24,66 @@ public class ItemGen {
 	
 	private static int incrementId = 0;
 	private static BufferedWriter bWriter = null;
-	private static PreparedStatement ps = null;
+	private static Instances inss;
 	
 	/**
 	 * 离散属性的分析处理，形成value-id对
-	 * @param table
-	 * @param attr
-	 * @throws SQLException
-	 * @throws IOException 
+	 * @throws Exception
 	 */
-	public static void genDiscreteAttrPairs(String table, String attr) throws SQLException, IOException {
-		bWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX), true)); // append mode
+	public static void genItems() throws Exception {
+		inss = InstanceLoader.loadInstances();
 		
-		Connection connection = DbUtil.openConn(Constant.DB_NAME);
-		String sql = "SELECT `"+ attr +"` FROM `"+ table +"` WHERE `"+ attr+ "` is not null GROUP BY `"+ attr +"`;";
-		ps = connection.prepareStatement(sql);
-		ResultSet rs = ps.executeQuery();
-		if (rs.first()) {
-			List<String> list = new ArrayList<String>();
-			do {
-				String val = rs.getString(attr);
-				if (val.equals("?")) {
-					continue;
-				}
-				list.add(val);
-			} while (rs.next());
-			for (int i = 0; i < list.size(); i++) {
-				bWriter.write(list.get(i) + Constant.SP + incrementId++);
-				bWriter.newLine();
-			}
+		Map<String, Map<String, Integer>> itemsMap = new HashMap<String, Map<String,Integer>>();
+		// 遍历dataset中所有的instances
+		for (int i = 0; i < inss.numInstances(); i++) {
+			Instance ins = inss.instance(i);
 			
+			// 遍历此instance的attributes-values
+			for (int j = 0; j < inss.numAttributes()-1; j++) {
+				String attr = inss.attribute(j).name();
+				String val = ins.stringValue(j);
+				
+				if (!itemsMap.containsKey(attr)) {
+					Map<String, Integer> valIdMap = new HashMap<String, Integer>();
+					valIdMap.put(val, incrementId++);
+					itemsMap.put(attr, valIdMap);
+				} else {
+					Map<String, Integer> valIdMap = itemsMap.get(attr);
+					if (!valIdMap.containsKey(val)) {
+						valIdMap.put(val, incrementId++);
+					}
+				}
+			}
 		}
-		System.out.println("success write attr-val-id tuples for " + attr);
-		System.out.println("next id = " + incrementId);
-		bWriter.flush();
 		
-		bWriter.close();
-		ps.close();
-		DbUtil.closeConn(connection);
+		
+		// output items
+		BufferedWriter allBWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + "_ALL" + Constant.ITEM_FILE_POSTFIX), true)); // append mode
+		for (String attr : itemsMap.keySet()) {
+			bWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX), true)); // append mode
+			StringBuffer sb = new StringBuffer();
+			StringBuffer sb2 = new StringBuffer();
+			for (Entry<String, Integer> entry : itemsMap.get(attr).entrySet()) {
+				sb.append(entry.getKey() + Constant.SP + entry.getValue() + "\n");
+				sb2.append(attr + Constant.SP + entry.getKey() + Constant.SP + entry.getValue() + "\n");
+			}
+			bWriter.write(sb.toString());
+			bWriter.flush();
+			bWriter.close();
+			
+			// write all to one file
+			allBWriter.write(sb2.toString());
+			allBWriter.flush();
+		}
+		allBWriter.close();
+		//System.out.println(dataset);
 	}
 	
 	
 	public static void main(String[] args) {
 		try {
-			for (String attr : Constant.DB_TABLE.columns()) {
-				genDiscreteAttrPairs(Constant.DB_TABLE.tableName(), attr);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			genItems();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -2,79 +2,100 @@ package meta.transaction;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import meta.entity.AttrValEntry;
-import meta.util.DbUtil;
 import meta.util.constants.Constant;
+import meta.util.loader.InstanceLoader;
 import meta.util.loader.ItemLoader;
+import weka.core.Instance;
+import weka.core.Instances;
 
 public class TransactionGen {
 	
-	private static Map<String, Map<String, AttrValEntry>> pairMap = null;
+	private static Map<String, Map<String, AttrValEntry>> itemMap = null;
 	private static BufferedWriter bWriter = null;
+	private static Instances inss;
 	
 	/**
-	 * gen transaction
-	 * @throws SQLException 
-	 * @throws IOException 
+	 * generate global transactions
+	 * @throws Exception 
 	 */
-	public static void genTransaction() throws SQLException, IOException {
-		
-		if (pairMap == null) {
-			pairMap = ItemLoader.loadItems();
+	public static void genTransaction() throws Exception {
+		inss = InstanceLoader.loadInstances();
+		if (itemMap == null) {
+			itemMap = ItemLoader.loadItems(inss);
 		}
-		
-		Connection connection = DbUtil.openConn(Constant.DB_NAME);
 		bWriter = new BufferedWriter(new FileWriter(Constant.TRANSACTION_FILE, true)); // append mode
 		
-		String sql = "select * from `" + Constant.DB_TABLE.tableName() + "`;";
-		PreparedStatement ps = connection.prepareStatement(sql);
-		ResultSet rs = ps.executeQuery();
-		if (rs.first()) {
-			boolean flag = true;
+		// generate transactions
+		for (int i = 0; i < inss.numInstances(); i++) {
 			StringBuffer sb = new StringBuffer();
-			do {
-				flag = true;
-				sb.delete(0, sb.length());
-				for (String col : Constant.DB_TABLE.columns()) {
-					String val = rs.getString(col);
-					if (val.equals("?")) {
-						flag = false;
-						break; // 此条数据无效
-					} 
-					sb.append(pairMap.get(col).get(val) + " ");
+			Instance ins = inss.instance(i);
+			for (int j = 0; j < inss.numAttributes()-1; j++) {
+				String attr = ins.attribute(j).name();
+				String val = ins.stringValue(j);
+				/*if (itemMap.get(attr) == null) {
+					System.err.println("bug");
+				}*/
+				if (itemMap.get(attr).containsKey(val)) {
+					sb.append(itemMap.get(attr).get(val).getId() + " ");
 				}
-				if (flag) {
-					try {
-						bWriter.write(sb.toString());
-						bWriter.newLine();
-						bWriter.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			} while (rs.next());
+			}
+			bWriter.write(sb.toString());
+			bWriter.newLine();
+			bWriter.flush();
+			
+		}
+		bWriter.close();
+	}
+	
+	/**
+	 * generate training transactions
+	 * @param train
+	 * @param flag
+	 * @param fold
+	 * @throws Exception
+	 */
+	public static void genTrainTransaction(List<Instance> train, int flag, int fold) throws Exception {
+		inss = InstanceLoader.loadInstances();
+		if (itemMap == null) {
+			itemMap = ItemLoader.loadItems(inss);
 		}
 		
-		bWriter.close();
-		ps.close();
-		DbUtil.closeConn(connection);
-		//System.out.println(++transCount + " transaction has been written into file.");
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(Constant.TRAIN_TRANSACTION_FILE_PREFIX+fold+"_c"+flag, true)); // append mode
 		
+		for (Instance instance : train) {
+			int numAttributes = instance.numAttributes();
+			StringBuffer sb = new StringBuffer();
+			boolean effective = true; // 记录是否含有missing数据
+			for (int i = 0; i < numAttributes-1; i++) {
+				String attrName = instance.attribute(i).name();
+				String attrVal = instance.stringValue(i);
+				if (attrVal.equals("?")) {
+					effective = false;
+					break;
+				}
+				AttrValEntry e = itemMap.get(attrName).get(attrVal);
+				int itemId = e.getId();
+				sb.append(itemId + " ");
+			}
+			if (effective) {
+				sb.replace(sb.length()-1, sb.length(), "");
+				bWriter.write(sb.toString());
+				bWriter.newLine();
+			}
+		}
+		bWriter.flush();
+		bWriter.close();
 	}
+	
 	
 	public static void main(String[] args) {
 		try {
 			genTransaction();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

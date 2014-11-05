@@ -57,7 +57,7 @@ public class TransactionAug {
 			
 			//----------------------------------
 			// ÀÛ¼ÆcoverµÄinstance
-			if (coverNPattern>=2) {
+			if (coverNPattern>=3) {
 				cover++;
 			}
 		}

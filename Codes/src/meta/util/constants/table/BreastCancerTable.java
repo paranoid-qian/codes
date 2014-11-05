@@ -3,7 +3,7 @@ package meta.util.constants.table;
 
 public class BreastCancerTable implements DbTable{
 	
-	private static final String table_name = "breast_cancer";
+	/*private static final String table_name = "breast_cancer";
 	
 	private static final String col_age = "age";
 	private static final String col_menopause = "menopause";
@@ -31,6 +31,6 @@ public class BreastCancerTable implements DbTable{
 	@Override 
 	public String className() {
 		return col_class;
-	}
+	}*/
 	
 }

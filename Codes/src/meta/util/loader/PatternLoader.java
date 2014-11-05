@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import weka.core.Instances;
+
 import meta.entity.AttrValEntry;
 import meta.entity.CosinePattern;
 import meta.entity.Pattern;
@@ -27,11 +29,11 @@ public class PatternLoader {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static List<Pattern> loadPattern() throws IOException {
-		bReader = new BufferedReader(new FileReader(Constant.PATTRN_FILE));
+	public static List<Pattern> loadPattern(Instances inss) throws IOException {
+		bReader = new BufferedReader(new FileReader(Constant.FP_PATTRN_FILE));
 		
 		if (reverseMap == null) {
-			reverseMap = ItemLoader.loadItemsByReverse();
+			reverseMap = ItemLoader.loadItemsByReverse(inss);
 		}
 		
 		List<Pattern> patList = new ArrayList<Pattern>();
@@ -55,10 +57,10 @@ public class PatternLoader {
 	}
 	
 	
-	public static List<CosinePattern> loadCosinePattern() throws IOException {
+	public static List<CosinePattern> loadCosinePattern(Instances inss) throws IOException {
 		bReader = new BufferedReader(new FileReader(Constant.COSINE_PATTERN_FILE));
 		if (reverseMap == null) {
-			reverseMap = ItemLoader.loadItemsByReverse();
+			reverseMap = ItemLoader.loadItemsByReverse(inss);
 		}
 		List<CosinePattern> patList = new ArrayList<CosinePattern>();
 		String line = null;
