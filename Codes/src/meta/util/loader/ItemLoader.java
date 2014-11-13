@@ -46,7 +46,7 @@ public class ItemLoader {
 			}
 			pairMap.put(attr, map);
 		}
-		System.out.println("Attribute-Value map loaded successfully.");
+		//System.out.println("Attribute-Value map loaded successfully.");
 		itemMap = pairMap;
 		return pairMap;
 	}
@@ -65,7 +65,7 @@ public class ItemLoader {
 			return reverseItemMap;
 		}
 		Map<Integer, AttrValEntry> reversePairMap = new HashMap<Integer, AttrValEntry>();
-		for (int i = 0; i < inss.numAttributes(); i++) {
+		for (int i = 0; i < inss.numAttributes()-1; i++) {
 			String attr = inss.attribute(i).name();
 			BufferedReader bReader = new BufferedReader(new FileReader(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX));
 			while (true) {
@@ -79,7 +79,7 @@ public class ItemLoader {
 			}
 			bReader.close();
 		}
-		System.out.println("Attribute-Value reverse map loaded successfully.");
+		//System.out.println("Attribute-Value reverse map loaded successfully.");
 		reverseItemMap = reversePairMap;
 		return reversePairMap;
 	}

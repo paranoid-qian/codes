@@ -21,11 +21,14 @@ public class Pattern implements Comparable<Pattern>{
 	/* pattern attr and value */
 	private String pAttr = null;
 	
+	/* pattern item ids */
+	private String pItemIds = null;
+	
 	/* pattern information gain value, default 0.0 */
 	private double ig = 0;
 	
 	/* global support value */
-	private int globalSupport;
+	private int support;
 	
 	public Pattern() {
 		entryList = new ArrayList<AttrValEntry>();
@@ -46,6 +49,14 @@ public class Pattern implements Comparable<Pattern>{
 		return pAttr;
 	}
 	
+	public String pItems() {
+		if (this.pItemIds == null) {
+			resolve();
+		}
+		return pItemIds;
+	}
+	
+	
 	public String pValue(Instance ins) {
 		for (AttrValEntry entry : entryList) {
 			// if one entry doesn't fit, return NO_FIT
@@ -65,11 +76,11 @@ public class Pattern implements Comparable<Pattern>{
 		return this.ig;
 	}
 	
-	public void setGlobalSupport(int support) {
-		this.globalSupport = support;
+	public void setSupport(int support) {
+		this.support = support;
 	}
-	public int getGlobalSupport() {
-		return this.globalSupport;
+	public int getSupport() {
+		return this.support;
 	}
 	
 	/*
@@ -77,12 +88,15 @@ public class Pattern implements Comparable<Pattern>{
 	 */
 	private void resolve() {
 		StringBuilder name = new StringBuilder("");
+		StringBuilder items = new StringBuilder();
 		for (AttrValEntry entry : entryList) {
 			name.append(entry.getAttr() + "=" + entry.getVal() + "&");
+			items.append(entry.getId() + " ");
 		}
 		name.replace(name.length()-1, name.length(), "");
-	
+		items.replace(items.length()-1, items.length(), "");
 		this.pAttr = name.toString();
+		this.pItemIds = items.toString();
 	}
 
 	@Override

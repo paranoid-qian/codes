@@ -20,26 +20,23 @@ public class TransactionAug {
 	}
 	
 	/**
-	 * augment dataset according to filtered patterns
+	 * 扩展pattern到instances中
 	 * @param patterns
 	 * @param instances
 	 * @return
 	 * @throws IOException 
 	 */
-	public static Instances augmentDataset(List<Pattern> patterns, Instances instances) throws IOException {
+	public static Instances augmentDataset(List<? extends Pattern> patterns, Instances instances) throws IOException {
 		Instances copy = new Instances(instances);
 		
-		/* 计算 每折cover到的instance比例 */
-		int cover = 0;
 		int newAttrStart = copy.numAttributes() - 1;
 		
-		// insert new attributes(patterns)
+		// 插入新attributes（即pattern）
 		for (Pattern pattern : patterns) {
 			copy.insertAttributeAt(new Attribute(pattern.pName(), fv), copy.numAttributes()-1);
 		}
-		// insert corresponding attribute values(pattern values)
+		// 插入新的attributes values
 		for (int i = 0; i < copy.numInstances(); i++) {
-			
 			int coverNPattern = 0;
 			
 			Instance ins = copy.instance(i);
@@ -47,22 +44,8 @@ public class TransactionAug {
 			for (Pattern pattern : patterns) {
 				String isFit = pattern.pValue(ins);
 				ins.setValue(index++, isFit);
-				//--------------------------------
-				// 计算是否cover这个instance
-				if (isFit.equals(Constant.FIT)) {
-					coverNPattern++;
-				}
-				//---------------------------------
-			}
-			
-			//----------------------------------
-			// 累计cover的instance
-			if (coverNPattern>=3) {
-				cover++;
 			}
 		}
-		//System.out.println("此折cover到的instance比例为： " + cover + "/" + copy.numInstances() + "=" + ((double)cover)/copy.numInstances());
-		System.out.println(((double)cover)/copy.numInstances());
 		return copy;
 	}
 	

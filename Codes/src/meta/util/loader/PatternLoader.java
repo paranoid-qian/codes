@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import weka.core.Instances;
-
 import meta.entity.AttrValEntry;
-import meta.entity.CosinePattern;
-import meta.entity.Pattern;
+import meta.entity.PuPattern;
 import meta.util.constants.Constant;
+import weka.core.Instances;
 
 public class PatternLoader {
 	private static BufferedReader bReader = null;
@@ -20,84 +18,96 @@ public class PatternLoader {
 	/* attribute value pairs (reverse) */
 	private static Map<Integer, AttrValEntry> reverseMap = null;
 	
-	/* indicate measure numbers in pattern file */
-	private static final int ME_NUM = 2;
 	
 	
 	/**
-	 * load pattern and format it
+	 * ‘ÿ»Î fp pattern
+	 * @param inss
+	 * @param fold
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static List<Pattern> loadPattern(Instances inss) throws IOException {
-		bReader = new BufferedReader(new FileReader(Constant.FP_PATTRN_FILE));
+	
+	public static List<PuPattern> loadTrain_FoldX_FpPatterns(Instances inss, int fold) throws IOException {
+		String src = Constant.FP_TRAIN_PATTERN_FOLDER +  Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		
+		bReader = new BufferedReader(new FileReader(src));
 		
 		if (reverseMap == null) {
 			reverseMap = ItemLoader.loadItemsByReverse(inss);
 		}
 		
-		List<Pattern> patList = new ArrayList<Pattern>();
+		List<PuPattern> patList = new ArrayList<PuPattern>();
 		String line = null;
 		while (true) {
 			line = bReader.readLine();
 			if (line == null || line.equals("")) {
 				break;
 			}
-			Pattern pattern = new Pattern();
-			String[] sp = line.split(" ");
-			for (int i = 0; i < sp.length-ME_NUM; i++) {
-				int itemId = Integer.parseInt(sp[i]);
-				pattern.addEntry(reverseMap.get(itemId));
-			}
-			String suppStr = sp[sp.length-ME_NUM];
-			pattern.setGlobalSupport(Integer.parseInt(suppStr.substring(1, suppStr.length()-1)));	// global support
-			patList.add(pattern);
-		}
-		return patList;
-	}
-	
-	
-	public static List<CosinePattern> loadCosinePattern(Instances inss) throws IOException {
-		bReader = new BufferedReader(new FileReader(Constant.COSINE_PATTERN_FILE));
-		if (reverseMap == null) {
-			reverseMap = ItemLoader.loadItemsByReverse(inss);
-		}
-		List<CosinePattern> patList = new ArrayList<CosinePattern>();
-		String line = null;
-		while (true) {
-			line = bReader.readLine();
-			if (line == null || line.equals("")) {
-				break;
-			}
-			CosinePattern pattern = new CosinePattern();
-			String[] sp = line.split("\\s+");
-			for (int i = 0; i < sp.length-ME_NUM; i++) {
-				int itemId = Integer.parseInt(sp[i]);
-				pattern.addEntry(reverseMap.get(itemId));
-			}
-			String suppStr = sp[sp.length-ME_NUM];
-			pattern.setGlobalSupport(Integer.parseInt(suppStr.substring(1, suppStr.length()-1)));	// global support
+			PuPattern pattern = new PuPattern();
+			String[] sp = line.split("\\|");
 			
-			String cosineStr = sp[sp.length-1];
-			pattern.setCosine(Double.parseDouble(cosineStr));	// global cosine value
-			
-			patList.add(pattern);
-		}
-		
-		return patList;
-	}
-	
-	/*public static void main(String[] args) {
-		try {
-			List<Pattern> list = PatternLoader.loadPattern();
-			for (Pattern pattern : list) {
-				for (AttrValEntry entry : pattern.entrys()) {
-					System.out.print(entry.getId() + " ");
+			// pattern entrys
+			String[] entrys = sp[0].split("\\s+");
+			for (String idStr : entrys) {
+				if (idStr.equals("")) {
+					System.out.println("bug");
 				}
-				System.out.println();
+				pattern.addEntry(reverseMap.get(Integer.parseInt(idStr)));	
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			// global support
+			pattern.setSupport(Integer.parseInt(sp[1]));	
+			
+			patList.add(pattern);
 		}
-	}*/
+		return patList;
+	}
+	
+	
+	/**
+	 * ‘ÿ»Î pu pattern
+	 * @param inss
+	 * @param fold
+	 * @param c0_OR_c1
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<PuPattern> loadTrain_L_FoldX_PuPatterns(Instances inss, int fold, int c0_OR_c1) throws IOException {
+		String src = Constant.PU_TRAIN_L0_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		if (c0_OR_c1 == 1) {
+			src = Constant.PU_TRAIN_L1_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		}
+		
+		bReader = new BufferedReader(new FileReader(src));
+		
+		if (reverseMap == null) {
+			reverseMap = ItemLoader.loadItemsByReverse(inss);
+		}
+		
+		List<PuPattern> patList = new ArrayList<PuPattern>();
+		String line = null;
+		while (true) {
+			line = bReader.readLine();
+			if (line == null || line.equals("")) {
+				break;
+			}
+			PuPattern pattern = new PuPattern();
+			String[] sp = line.split("\\|");
+			
+			// pattern entrys
+			String[] entrys = sp[0].split("\\s+");
+			for (String idStr : entrys) {
+				if (idStr.equals("")) {
+					System.out.println("bug");
+				}
+				pattern.addEntry(reverseMap.get(Integer.parseInt(idStr)));	
+			}
+			// global support
+			pattern.setSupport(Integer.parseInt(sp[1]));	
+			
+			patList.add(pattern);
+		}
+		return patList;
+	}
+	
 }

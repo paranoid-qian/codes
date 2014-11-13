@@ -1,50 +1,80 @@
 package meta.classifier;
 
-import java.io.IOException;
-import java.util.List;
+import java.io.File;
 
-import meta.entity.Pattern;
+import meta.attributes.ItemGen;
 import meta.util.constants.Constant;
 import meta.util.loader.InstanceLoader;
-import meta.util.loader.PatternLoader;
-import weka.classifiers.Classifier;
-import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
 public abstract class AbstractClassifier {
 	
-	/**
-	 * abstract method for evaluation classifier
-	 */
-	public abstract void evaluate() throws Exception;
-	
-	
 	
 	protected Instances data = null;
-	protected List<Pattern> pats = null;	
-	
+	//protected List<Pattern> pats = null;	
 	
 	public AbstractClassifier() {
 		try {
 			data = InstanceLoader.loadInstances();
-			pats = PatternLoader.loadPattern(data);
+			//pats = PatternLoader.loadPattern(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		// 检查文件夹是否存在，否则建立文件夹
+		checkItemFolder();
+		checkFpFolders();
+		checkPuFolders();
+		
+		// 构造items
+		try {
+			ItemGen.genItems();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
 	
-	/*
-	 * eval util
-	 */
-	protected double[] eval(Classifier classifier, Instances train, Instances test) throws Exception {
-		Classifier copiedClassifier = Classifier.makeCopy(classifier);
-		copiedClassifier.buildClassifier(train);
-		Evaluation eval = new Evaluation(train);	// build evaluator
-		eval.evaluateModel(copiedClassifier, test);
-		
-		double[] rst = {eval.pctCorrect(), eval.correct(), eval.pctIncorrect(), eval.incorrect()};
-		return rst;
+	private void checkItemFolder() {
+		// item folder
+		File file = new File(Constant.ITEMS_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		} else {
+			System.out.println("ok");
+		}
 	}
 	
+	private void checkFpFolders() {
+		// fp trans folder
+		File file = new File(Constant.FP_TRAIN_TRANSACTION_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		// fp pattern folder
+		file = new File(Constant.FP_TRAIN_PATTERN_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+	}
+	
+	private void checkPuFolders() {
+		File file = new File(Constant.PU_TRAIN_L0_PATTERN_FILE_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		file = new File(Constant.PU_TRAIN_L1_PATTERN_FILE_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		file = new File(Constant.PU_TRAIN_L0_TRANSACTION_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		file = new File(Constant.PU_TRAIN_L1_TRANSACTION_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+	}
 }

@@ -11,8 +11,6 @@ import meta.util.constants.Constant;
 import meta.util.loader.InstanceLoader;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Discretize;
 
 
 /**
@@ -58,9 +56,9 @@ public class ItemGen {
 		
 		
 		// output items
-		BufferedWriter allBWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + "_ALL" + Constant.ITEM_FILE_POSTFIX), true)); // append mode
+		BufferedWriter allBWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + "_ALL" + Constant.ITEM_FILE_POSTFIX))); // all 写入一个文件备份
 		for (String attr : itemsMap.keySet()) {
-			bWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX), true)); // append mode
+			bWriter = new BufferedWriter(new FileWriter(new File(Constant.ITEMS_FOLDER + attr + Constant.ITEM_FILE_POSTFIX))); // append mode
 			StringBuffer sb = new StringBuffer();
 			StringBuffer sb2 = new StringBuffer();
 			for (Entry<String, Integer> entry : itemsMap.get(attr).entrySet()) {

@@ -15,39 +15,44 @@ import weka.core.Instances;
 public class TransactionGen {
 	
 	private static Map<String, Map<String, AttrValEntry>> itemMap = null;
-	private static BufferedWriter bWriter = null;
 	private static Instances inss;
 	
 	/**
-	 * generate global transactions
-	 * @throws Exception 
+	 * updated 11.7
+	 * @param trainC_X
+	 * @param fold
+	 * @param c_1ORc_0
+	 * @throws Exception
 	 */
-	public static void genTransaction() throws Exception {
+	public static void genL_X_PuTransactionFile(List<Instance> trainC_X, int fold, int c_1ORc_0) throws Exception {
 		inss = InstanceLoader.loadInstances();
 		if (itemMap == null) {
 			itemMap = ItemLoader.loadItems(inss);
 		}
-		bWriter = new BufferedWriter(new FileWriter(Constant.TRANSACTION_FILE, true)); // append mode
+		String prefix = Constant.PU_TRAIN_L0_TRANSACTION_FOLDER;
+		if (c_1ORc_0 == 1) {
+			prefix = Constant.PU_TRAIN_L1_TRANSACTION_FOLDER;
+		}
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(prefix + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX)); 
 		
-		// generate transactions
-		for (int i = 0; i < inss.numInstances(); i++) {
+		for (Instance instance : trainC_X) {
+			int numAttributes = instance.numAttributes();
 			StringBuffer sb = new StringBuffer();
-			Instance ins = inss.instance(i);
-			for (int j = 0; j < inss.numAttributes()-1; j++) {
-				String attr = ins.attribute(j).name();
-				String val = ins.stringValue(j);
-				/*if (itemMap.get(attr) == null) {
-					System.err.println("bug");
-				}*/
-				if (itemMap.get(attr).containsKey(val)) {
-					sb.append(itemMap.get(attr).get(val).getId() + " ");
+			
+			for (int i = 0; i < numAttributes-1; i++) {
+				String attrName = instance.attribute(i).name();
+				String attrVal = instance.stringValue(i);
+				AttrValEntry e = itemMap.get(attrName).get(attrVal);
+				if (e != null) {
+					int itemId = e.getId();
+					sb.append(itemId + " ");
 				}
 			}
+			sb.replace(sb.length()-1, sb.length(), "");
 			bWriter.write(sb.toString());
 			bWriter.newLine();
-			bWriter.flush();
-			
 		}
+		bWriter.flush();
 		bWriter.close();
 	}
 	
@@ -58,46 +63,34 @@ public class TransactionGen {
 	 * @param fold
 	 * @throws Exception
 	 */
-	public static void genTrainTransaction(List<Instance> train, int flag, int fold) throws Exception {
+	public static void genFpTrainTransaction(Instances train, int fold) throws Exception {
 		inss = InstanceLoader.loadInstances();
 		if (itemMap == null) {
 			itemMap = ItemLoader.loadItems(inss);
 		}
 		
-		BufferedWriter bWriter = new BufferedWriter(new FileWriter(Constant.TRAIN_TRANSACTION_FILE_PREFIX+fold+"_c"+flag, true)); // append mode
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX)); 
 		
-		for (Instance instance : train) {
+		for (int i=0; i< train.numInstances(); i++) {
+			Instance instance = train.instance(i);
+			
 			int numAttributes = instance.numAttributes();
 			StringBuffer sb = new StringBuffer();
-			boolean effective = true; // 记录是否含有missing数据
-			for (int i = 0; i < numAttributes-1; i++) {
-				String attrName = instance.attribute(i).name();
-				String attrVal = instance.stringValue(i);
-				if (attrVal.equals("?")) {
-					effective = false;
-					break;
-				}
+			for (int j = 0; j < numAttributes-1; j++) {
+				String attrName = instance.attribute(j).name();
+				String attrVal = instance.stringValue(j);
 				AttrValEntry e = itemMap.get(attrName).get(attrVal);
-				int itemId = e.getId();
-				sb.append(itemId + " ");
+				if (e != null) {
+					int itemId = e.getId();
+					sb.append(itemId + " ");
+				}
 			}
-			if (effective) {
-				sb.replace(sb.length()-1, sb.length(), "");
-				bWriter.write(sb.toString());
-				bWriter.newLine();
-			}
+			sb.replace(sb.length()-1, sb.length(), "");
+			bWriter.write(sb.toString());
+			bWriter.newLine();
 		}
 		bWriter.flush();
 		bWriter.close();
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			genTransaction();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

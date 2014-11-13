@@ -14,7 +14,8 @@ public class InstanceLoader {
 	private static Instances inss = null;
 	
 	/**
-	 * load instances
+	 * 1. 加载instances
+	 * 2. 加载attributes的下标，供后续使用
 	 * @param path
 	 * @return
 	 * @throws Exception 
@@ -30,7 +31,8 @@ public class InstanceLoader {
 		Instances newInss = loader.getDataSet();
 		newInss.setClassIndex(newInss.numAttributes()-1);
 		
-		loadAttrIndexs(newInss); // load attribute indexs for latter usage
+		// 加载attribute的下表，供后续使用
+		loadAttrIndexs(newInss); 
 		
 		// Discretize number attributes
 		Discretize filter = new Discretize();
