@@ -93,4 +93,41 @@ public class TransactionGen {
 		bWriter.close();
 	}
 	
+	/**
+	 * generate training transactions
+	 * @param train
+	 * @param flag
+	 * @param fold
+	 * @throws Exception
+	 */
+	public static void genCpTrainTransaction(Instances train, int fold) throws Exception {
+		inss = InstanceLoader.loadInstances();
+		if (itemMap == null) {
+			itemMap = ItemLoader.loadItems(inss);
+		}
+		
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(Constant.CP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX)); 
+		
+		for (int i=0; i< train.numInstances(); i++) {
+			Instance instance = train.instance(i);
+			
+			int numAttributes = instance.numAttributes();
+			StringBuffer sb = new StringBuffer();
+			for (int j = 0; j < numAttributes-1; j++) {
+				String attrName = instance.attribute(j).name();
+				String attrVal = instance.stringValue(j);
+				AttrValEntry e = itemMap.get(attrName).get(attrVal);
+				if (e != null) {
+					int itemId = e.getId();
+					sb.append(itemId + " ");
+				}
+			}
+			sb.replace(sb.length()-1, sb.length(), "");
+			bWriter.write(sb.toString());
+			bWriter.newLine();
+		}
+		bWriter.flush();
+		bWriter.close();
+	}
+	
 }

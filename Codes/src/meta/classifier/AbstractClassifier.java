@@ -26,6 +26,7 @@ public abstract class AbstractClassifier {
 		checkItemFolder();
 		checkFpFolders();
 		checkPuFolders();
+		checkCpFolders();
 		
 		// ππ‘Ïitems
 		try {
@@ -57,6 +58,16 @@ public abstract class AbstractClassifier {
 		if (!file.exists() && !file.isDirectory()) {
 			file.mkdirs();
 		}
+		// fp ig trans folder
+		file = new File(Constant.FP_IG_TRAIN_TRANSACTION_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		// fp ig pattern folder
+		file = new File(Constant.FP_IG_TRAIN_PATTERN_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
 	}
 	
 	private void checkPuFolders() {
@@ -77,4 +88,19 @@ public abstract class AbstractClassifier {
 			file.mkdirs();
 		}
 	}
+	
+	private void checkCpFolders() {
+		// fp trans folder
+		File file = new File(Constant.CP_TRAIN_TRANSACTION_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+		// fp pattern folder
+		file = new File(Constant.CP_TRAIN_PATTERN_FOLDER);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
+		}
+	}
+	
+	
 }

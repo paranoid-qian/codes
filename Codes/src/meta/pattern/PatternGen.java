@@ -3,6 +3,7 @@ package meta.pattern;
 import java.io.IOException;
 import java.util.List;
 
+import meta.entity.Pattern;
 import meta.entity.PuPattern;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
@@ -30,8 +31,13 @@ public class PatternGen {
 		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tc -s"+ Constant.minSupport +"  -v\"|%a\" "
 				+ src + " "
 				+ dest ;
+		/*String cmd = "E:\\weka\\dataset\\fpgrowth.exe -x -q1 -s"+ Constant.minCosineSupport +" -c" + Constant.minCosine + " "
+				+ src + " "
+				+ dest ;*/
 		 try {
-			//System.out.println(cmd);
+			if (Constant.debug_cmd_pu) {
+				System.out.println(cmd);
+			}
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			
@@ -63,7 +69,7 @@ public class PatternGen {
 	 * @param fold
 	 * @return
 	 */
-	public static List<PuPattern> genTrain_XFpPatterns(Instances inss, int fold) {
+	public static List<Pattern> genTrain_XFpPatterns(Instances inss, int fold) {
 		String src = Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		String dest = Constant.FP_TRAIN_PATTERN_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		
@@ -87,7 +93,7 @@ public class PatternGen {
 		}
 		 
 		// load pattern
-		List<PuPattern> train_X_FpPatterns = null;
+		List<Pattern> train_X_FpPatterns = null;
 		try {
 			train_X_FpPatterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);
 		} catch (IOException e) {
@@ -96,6 +102,44 @@ public class PatternGen {
 		return train_X_FpPatterns;
 	}
 	
+	/**
+	 * ²úÉúcp
+	 * @param inss
+	 * @param fold
+	 * @return
+	 */
+	public static List<PuPattern> genTrain_XCpPatterns(Instances inss, int fold) {
+		String src = Constant.CP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		String dest = Constant.CP_TRAIN_PATTERN_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		
+		String cmd = "E:\\weka\\dataset\\fpgrowth.exe -x -q1 -s"+ Constant.minCosineSupport +" -c" + Constant.minCosine + " "
+				+ src + " "
+				+ dest ;
+		 try {
+			//System.out.println(cmd);
+			Process p = Runtime.getRuntime().exec(cmd);
+			p.waitFor();
+			
+		/*	// ¼ÇÂ¼ÃüÁî
+			BufferedWriter bWriter = new BufferedWriter(new FileWriter(Constant.FP_PATTERN_FOLEDR + "cmd.txt"));
+			bWriter.write(cmd);
+			bWriter.flush();
+			bWriter.close();*/
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		 
+		// load pattern
+		List<PuPattern> train_X_FpPatterns = null;
+		try {
+			train_X_FpPatterns = PatternLoader.loadTrain_FoldX_CpPatterns(inss, fold);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return train_X_FpPatterns;
+	}
 	
 	
 	/**

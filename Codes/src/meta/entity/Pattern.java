@@ -13,7 +13,7 @@ import meta.util.constants.Constant;
  * @author paranoid
  *
  */
-public class Pattern implements Comparable<Pattern>{
+public class Pattern {
 	
 	/* pattern, 1 pat per line */
 	private List<AttrValEntry> entryList;
@@ -97,11 +97,5 @@ public class Pattern implements Comparable<Pattern>{
 		items.replace(items.length()-1, items.length(), "");
 		this.pAttr = name.toString();
 		this.pItemIds = items.toString();
-	}
-
-	@Override
-	public int compareTo(Pattern o) {
-		return Double.compare(o.getIg(), this.getIg());
-				
 	}
 }

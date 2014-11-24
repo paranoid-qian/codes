@@ -4,16 +4,25 @@ import java.util.Random;
 
 public interface Constant {
 	
-	public static final String DATASET = "credit";
+	public static final String DATASET ="adult";
 	
-	public static final int minSupport = 50;
-	public static final double recall = 0.6;
+	public static final int minSupport = 25;
+	public static final double recall = 0.3;
 	public static final int delta = 1;
+	public static final int fp_delta = 1;
 	
+	//折数
+	public static final int numFolds = 10;
+	
+	// cp
+	public static final double minCosine = 0.2;
+	public static final double minCosineSupport = 0;
 	
 	/* 调试用，开启后输出具体的每折pattern */
 	public static final boolean debug_pu_pattern = false;
 	public static final boolean debug_origin_summary = false;
+	public static final boolean debug_cmd_pu = false;
+	public static final boolean debug_fp_ig = false;
 	
 	/* 随机种子 */
 	public static final long s = System.currentTimeMillis();
@@ -32,6 +41,13 @@ public interface Constant {
 	/* fp trans and pattern */
 	public static final String FP_TRAIN_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\fp\\trans";
 	public static final String FP_TRAIN_PATTERN_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\fp\\pattern";
+	
+	/* fp ig trans and pattern */
+	public static final String FP_IG_TRAIN_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\fpig\\trans";
+	public static final String FP_IG_TRAIN_PATTERN_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\fpig\\pattern";
+	
+	public static final String CP_TRAIN_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\cp\\trans";
+	public static final String CP_TRAIN_PATTERN_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\cp\\pattern";
 	
 	//===============================================================================================================================
 	

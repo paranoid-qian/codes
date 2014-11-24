@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import meta.entity.AttrValEntry;
+import meta.entity.Pattern;
 import meta.entity.PuPattern;
 import meta.util.constants.Constant;
 import weka.core.Instances;
@@ -28,7 +29,7 @@ public class PatternLoader {
 	 * @throws IOException
 	 */
 	
-	public static List<PuPattern> loadTrain_FoldX_FpPatterns(Instances inss, int fold) throws IOException {
+	public static List<Pattern> loadTrain_FoldX_FpPatterns(Instances inss, int fold) throws IOException {
 		String src = Constant.FP_TRAIN_PATTERN_FOLDER +  Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		
 		bReader = new BufferedReader(new FileReader(src));
@@ -37,7 +38,7 @@ public class PatternLoader {
 			reverseMap = ItemLoader.loadItemsByReverse(inss);
 		}
 		
-		List<PuPattern> patList = new ArrayList<PuPattern>();
+		List<Pattern> patList = new ArrayList<Pattern>();
 		String line = null;
 		while (true) {
 			line = bReader.readLine();
@@ -105,6 +106,46 @@ public class PatternLoader {
 			// global support
 			pattern.setSupport(Integer.parseInt(sp[1]));	
 			
+			patList.add(pattern);
+		}
+		return patList;
+	}
+	
+	/**
+	 * ‘ÿ»Î fp pattern
+	 * @param inss
+	 * @param fold
+	 * @return
+	 * @throws IOException
+	 */
+	
+	public static List<PuPattern> loadTrain_FoldX_CpPatterns(Instances inss, int fold) throws IOException {
+		String src = Constant.CP_TRAIN_PATTERN_FOLDER +  Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		
+		bReader = new BufferedReader(new FileReader(src));
+		
+		if (reverseMap == null) {
+			reverseMap = ItemLoader.loadItemsByReverse(inss);
+		}
+		
+		List<PuPattern> patList = new ArrayList<PuPattern>();
+		String line = null;
+		while (true) {
+			line = bReader.readLine();
+			if (line == null || line.equals("")) {
+				break;
+			}
+			PuPattern pattern = new PuPattern();
+			String[] sp = line.split("\\s+");
+			
+			// pattern entrys
+			for (int i = 0; i<sp.length-2; i++) {
+				String idStr = sp[i];
+				if (idStr.equals("")) {
+					System.out.println("bug");
+				}
+				pattern.addEntry(reverseMap.get(Integer.parseInt(idStr)));	
+			}
 			patList.add(pattern);
 		}
 		return patList;
