@@ -1,5 +1,6 @@
 package meta.pattern;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,15 +20,16 @@ public class PatternGen {
 	 * @param c0_OR_c1
 	 * @return
 	 */
-	public static List<PuPattern> genTrain_XPuPatterns(Instances inss, int fold, int c0_OR_c1) {
-		String src = Constant.PU_TRAIN_L0_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
-		String dest = Constant.PU_TRAIN_L0_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+	public static List<PuPattern> genTrain_XPuPatterns(Instances inss, int fold, double c_x) {
+		String src = Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold + Constant.TRANS_PATH + c_x + Constant.TYPE_POSTFIX;
 		
-		if (c0_OR_c1 == 1) {
-			src = Constant.PU_TRAIN_L1_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
-			dest = Constant.PU_TRAIN_L1_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
+		String destFolder = Constant.PU_TRAIN_LX_PATTERN_FILE_FOLDER + fold;
+		File file = new File(destFolder);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
 		}
 		
+		String dest = destFolder + Constant.PATS_PATH + c_x + Constant.TYPE_POSTFIX;
 		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tc -s"+ Constant.minSupport +"  -v\"|%a\" "
 				+ src + " "
 				+ dest ;
@@ -55,7 +57,7 @@ public class PatternGen {
 		// load pattern
 		List<PuPattern> train_X_PuPatterns = null;
 		try {
-			train_X_PuPatterns = PatternLoader.loadTrain_L_FoldX_PuPatterns(inss, fold, c0_OR_c1);
+			train_X_PuPatterns = PatternLoader.loadTrain_L_FoldX_PuPatterns(inss, fold, c_x);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

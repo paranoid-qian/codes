@@ -25,7 +25,6 @@ public abstract class AbstractClassifier {
 		// 检查文件夹是否存在，否则建立文件夹
 		checkItemFolder();
 		checkFpFolders();
-		checkPuFolders();
 		checkCpFolders();
 		
 		// 构造items
@@ -65,25 +64,6 @@ public abstract class AbstractClassifier {
 		}
 		// fp ig pattern folder
 		file = new File(Constant.FP_IG_TRAIN_PATTERN_FOLDER);
-		if (!file.exists() && !file.isDirectory()) {
-			file.mkdirs();
-		}
-	}
-	
-	private void checkPuFolders() {
-		File file = new File(Constant.PU_TRAIN_L0_PATTERN_FILE_FOLDER);
-		if (!file.exists() && !file.isDirectory()) {
-			file.mkdirs();
-		}
-		file = new File(Constant.PU_TRAIN_L1_PATTERN_FILE_FOLDER);
-		if (!file.exists() && !file.isDirectory()) {
-			file.mkdirs();
-		}
-		file = new File(Constant.PU_TRAIN_L0_TRANSACTION_FOLDER);
-		if (!file.exists() && !file.isDirectory()) {
-			file.mkdirs();
-		}
-		file = new File(Constant.PU_TRAIN_L1_TRANSACTION_FOLDER);
 		if (!file.exists() && !file.isDirectory()) {
 			file.mkdirs();
 		}

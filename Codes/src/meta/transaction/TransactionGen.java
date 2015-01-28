@@ -1,6 +1,7 @@
 package meta.transaction;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
@@ -24,16 +25,19 @@ public class TransactionGen {
 	 * @param c_1ORc_0
 	 * @throws Exception
 	 */
-	public static void genL_X_PuTransactionFile(List<Instance> trainC_X, int fold, int c_1ORc_0) throws Exception {
+	public static void genL_X_PuTransactionFile(List<Instance> trainC_X, int fold, double c_x) throws Exception {
 		inss = InstanceLoader.loadInstances();
 		if (itemMap == null) {
 			itemMap = ItemLoader.loadItems(inss);
 		}
-		String prefix = Constant.PU_TRAIN_L0_TRANSACTION_FOLDER;
-		if (c_1ORc_0 == 1) {
-			prefix = Constant.PU_TRAIN_L1_TRANSACTION_FOLDER;
+		
+		String folder = Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold;
+		File file = new File(folder);
+		if (!file.exists() && !file.isDirectory()) {
+			file.mkdirs();
 		}
-		BufferedWriter bWriter = new BufferedWriter(new FileWriter(prefix + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX)); 
+		
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(folder + Constant.TRANS_PATH + c_x + Constant.TYPE_POSTFIX)); 
 		
 		for (Instance instance : trainC_X) {
 			int numAttributes = instance.numAttributes();

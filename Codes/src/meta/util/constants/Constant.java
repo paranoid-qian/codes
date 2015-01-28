@@ -2,12 +2,19 @@ package meta.util.constants;
 
 import java.util.Random;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
+import wlsvm.WLSVM;
+
 public interface Constant {
 	
-	public static final String DATASET ="adult";
+	public static final String DATASET ="car";
 	
-	public static final int minSupport = 25;
-	public static final double recall = 0.3;
+	public static final Classifier CLASSIFIER = new WLSVM();
+	
+	public static final int minSupport = 60;
+	public static final double recall = 0.4;
 	public static final int delta = 1;
 	public static final int fp_delta = 1;
 	
@@ -29,11 +36,12 @@ public interface Constant {
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	/* pu trans and pattern */
-	public static final String PU_TRAIN_L1_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\transL1";
-	public static final String PU_TRAIN_L0_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\transL0";
-	public static final String PU_TRAIN_L0_PATTERN_FILE_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\patternL0";
-	public static final String PU_TRAIN_L1_PATTERN_FILE_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\patternL1";
+	public static final String PU_TRAIN_LX_TRANSACTION_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\fold_";
+	public static final String PU_TRAIN_LX_PATTERN_FILE_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\fold_";
 	//public static final String TEST_TRANSACTION_PATTERNS_FOLDER = "E:\\weka\\dataset\\"+ DATASET +"\\pu\\test\\";
+	
+	public static final String TRANS_PATH = "\\transL_";
+	public static final String PATS_PATH = "\\patternL_";
 	
 	public static final String FOLD_PATH = "\\fold_";
 	public static final String TYPE_POSTFIX = ".txt";
@@ -64,8 +72,8 @@ public interface Constant {
 	
 	
 	/* augment values */
-	public static final String FIT = "fit";
-	public static final String NO_FIT = "no-fit";
+	public static final String FIT = "1";
+	public static final String NO_FIT = "0";
 	
 	public static final String ARFF_POSTFIX = ".arff";
 	

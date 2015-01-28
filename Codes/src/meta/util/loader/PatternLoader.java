@@ -73,11 +73,8 @@ public class PatternLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<PuPattern> loadTrain_L_FoldX_PuPatterns(Instances inss, int fold, int c0_OR_c1) throws IOException {
-		String src = Constant.PU_TRAIN_L0_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
-		if (c0_OR_c1 == 1) {
-			src = Constant.PU_TRAIN_L1_PATTERN_FILE_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
-		}
+	public static List<PuPattern> loadTrain_L_FoldX_PuPatterns(Instances inss, int fold, double c_x) throws IOException {
+		String src = Constant.PU_TRAIN_LX_PATTERN_FILE_FOLDER + fold + Constant.PATS_PATH + c_x+ Constant.TYPE_POSTFIX;
 		
 		bReader = new BufferedReader(new FileReader(src));
 		

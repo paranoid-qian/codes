@@ -15,7 +15,7 @@ public class PuFilter {
 	
 	
 	/**
-	 * 过滤L1上生成的pattern
+	 * 过滤LX上生成的pattern
 	 * @param trainC_1
 	 * @param trainC_0
 	 * @param patterns
@@ -23,47 +23,36 @@ public class PuFilter {
 	 * @param recall
 	 * @return
 	 */
-	public static List<PuPattern> filter1(List<Instance> trainC_1, List<Instance> trainC_0, List<PuPattern> patterns, Instances test, double recall) {
+	public static List<PuPattern> filter(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, Instances test, double recall) {
 		
 		// 挑选超过recall的pattern作为候选pattern
-		List<PuPattern> filteredPatterns = filterByRecall1(trainC_1, trainC_0, patterns, recall);
+		List<PuPattern> filteredPatterns = filterByRecall(trainCX, trainC_X, patterns, recall);
 		//filteredPatterns = CalculateAndSortBySuppU(filteredPatterns, test);
 		// 统计值
-		int trainCount = trainC_0.size() + trainC_1.size();
+		int trainCount = trainCX.size() + trainC_X.size();
 		/*System.out.println("recall阈值:" + recall + "(" + recall*trainCount + ")");
 		System.out.println("L0:" + trainC_0.size());
 		System.out.println("L1:" + trainC_1.size());*/
 		return filteredPatterns;
 	}
 	
-	public static List<PuPattern> filter0(List<Instance> trainC_1, List<Instance> trainC_0, List<PuPattern> patterns, Instances test, double recall) {
-		
-		// 挑选超过recall的pattern作为候选pattern
-		List<PuPattern> filteredPatterns = filterByRecall0(trainC_1, trainC_0, patterns, recall);
-		//filteredPatterns = CalculateAndSortBySuppU(filteredPatterns, test);
-		/*for (PuPattern pattern : filteredPatterns) {
-			System.out.println(pattern.pItems() + " | " + pattern.getSuppL1() + " | " + pattern.getSuppL0() + " | " + pattern.getSuppU());
-		}*/
-		return filteredPatterns;
-	}
-	
 	
 	/**
-	 * 根据recall过滤出候选L1上的pattern
+	 * 根据recall过滤出候选LX上的pattern
 	 * @param train
 	 * @param recall
 	 * @return
 	 */
-	private static List<PuPattern> filterByRecall1(List<Instance> trainC_1, List<Instance> trainC_0, List<PuPattern> patterns, double recall) {
+	private static List<PuPattern> filterByRecall(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, double recall) {
 		List<PuPattern> filteredPatterns = new ArrayList<PuPattern>();
 		
-		int trainCount = trainC_0.size() + trainC_1.size();
+		int trainCount = trainCX.size() + trainC_X.size();
 		
-		int L0_count = trainC_0.size();
+		int L_X_count = trainC_X.size();
 		
 		// 过滤pattern
 		for (PuPattern pattern : patterns) {
-			if (pattern.getSuppL1()+L0_count-pattern.getSuppL0() >= recall*trainCount) {
+			if (pattern.getSuppL1()+L_X_count-pattern.getSuppL0() >= recall*trainCount) {
 				filteredPatterns.add(pattern);
 			}
 		}
@@ -71,27 +60,6 @@ public class PuFilter {
 		return filteredPatterns;
 	}
 	
-	/**
-	 * 根据recall过滤出候选L0上的pattern
-	 * @param train
-	 * @param recall
-	 * @return
-	 */
-	private static List<PuPattern> filterByRecall0(List<Instance> trainC_1, List<Instance> trainC_0, List<PuPattern> patterns, double recall) {
-		List<PuPattern> filteredPatterns = new ArrayList<PuPattern>();
-		
-		int trainCount = trainC_0.size() + trainC_1.size();
-		
-		int L1_count = trainC_1.size();
-		
-		// 过滤pattern
-		for (PuPattern pattern : patterns) {
-			if (pattern.getSuppL0()+L1_count-pattern.getSuppL1() >= recall*trainCount) {
-				filteredPatterns.add(pattern);
-			}
-		}
-		return filteredPatterns;
-	}
 	
 	/**
 	 * 根据suppU排序pattern

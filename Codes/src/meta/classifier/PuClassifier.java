@@ -2,8 +2,6 @@ package meta.classifier;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +20,9 @@ import meta.util.loader.ItemLoader;
 import meta.util.loader.PatternLoader;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.functions.LibSVM;
-import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
-import wlsvm.WLSVM;
 
 public class PuClassifier extends AbstractClassifier{
 	
@@ -61,9 +56,9 @@ public class PuClassifier extends AbstractClassifier{
 	public void evaluateOrigin() throws Exception {
 		Instances inss = new Instances(data);
 		
-		double[] precision = {0, 0, 0};
-		double[] recall = {0, 0, 0};
-		double[] fMeasure = {0, 0, 0};
+		double precision = 0;
+		double fMeasure = 0;
+		double recall = 0;
 		
 		// 评估分类性能
 		Evaluation eval = new Evaluation(inss);
@@ -79,17 +74,9 @@ public class PuClassifier extends AbstractClassifier{
 				e.printStackTrace();
 			}
 			
-			precision[0] += eval.precision(0);
-			precision[1] += eval.precision(1);
-			precision[2] += eval.weightedPrecision();
-			
-			recall[0] += eval.recall(0);
-			recall[1] += eval.recall(1);
-			recall[2] += eval.weightedRecall();
-			
-			fMeasure[0] += eval.fMeasure(0);
-			fMeasure[1] += eval.fMeasure(1);
-			fMeasure[2] += eval.weightedFMeasure();
+			precision += eval.weightedPrecision();
+			recall += eval.weightedRecall();
+			fMeasure += eval.weightedFMeasure();
 		}
 		
 		if (Constant.debug_origin_summary) {
@@ -102,7 +89,7 @@ public class PuClassifier extends AbstractClassifier{
 		//System.out.println("precision\t recall\t fMeasure");
 		//System.out.println(Utils.doubleToString(precision[0]/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(recall[0]/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(fMeasure[0]/numFolds, 7, 4));
 		//System.out.println(Utils.doubleToString(precision[1]/numFolds, 7 4) + "\t\t" + Utils.doubleToString(recall[1]/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(fMeasure[1]/numFolds, 7, 4));
-		System.out.println(Utils.doubleToString(precision[2]/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(recall[2]/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(fMeasure[2]/numFolds, 7, 4));
+		System.out.println(Utils.doubleToString(precision/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(recall/numFolds, 7, 4) + "\t\t" + Utils.doubleToString(fMeasure/numFolds, 7, 4));
 		
 	}
 	
@@ -219,98 +206,67 @@ public class PuClassifier extends AbstractClassifier{
 			Instances test = inss.trainCV(numFolds, fold);	// 90%
 			Instances train = inss.testCV(numFolds, fold); 	// 10%
 			
-			// 对train区分0/1两类
-			List<Instance> trainC_0 = new ArrayList<Instance>();
-			List<Instance> trainC_1 = new ArrayList<Instance>();
+			// 对train划分为多类
+			Map<Double, List<Instance>> trainC_XMap = new HashMap<Double, List<Instance>>();
 			for (int j = 0; j < train.numInstances(); j++) {
-				Instance ins = train.instance(j);
-				if (ins.classValue() == 0.0) {
-					trainC_0.add(ins);
+				Instance ins = inss.instance(j);
+				if (trainC_XMap.containsKey(ins.classValue())) {
+					trainC_XMap.get(ins.classValue()).add(ins);
 				} else {
-					trainC_1.add(ins);
+					List<Instance> trainC_X = new ArrayList<Instance>();
+					trainC_X.add(ins);
+					trainC_XMap.put(ins.classValue(), trainC_X);
+				}
+			}
+			
+			Map<String, PuPattern> union = new HashMap<String, PuPattern>();
+			// 分别生成transaction文件和pattern文件
+			for (Double classVal : trainC_XMap.keySet()) {
+				List<Instance> trainC_fit = trainC_XMap.get(classVal);
+				List<Instance> trainC_nofit = new ArrayList<Instance>();
+				for (Double j : trainC_XMap.keySet()) {
+					if (j.compareTo(classVal) != 0) {
+						trainC_nofit.addAll(trainC_XMap.get(j));
+					}
 				}
 				
-			}
-			
-			// 生成train_1和train_0上的分别生成transaction文件
-			TransactionGen.genL_X_PuTransactionFile(trainC_1, fold, 1);
-			TransactionGen.genL_X_PuTransactionFile(trainC_0, fold, 0);
-
-			// 在train_1上挖closed frequent pattern 
-			File transFile = new File(Constant.PU_TRAIN_L1_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX);
-			while (true) {
-				if (transFile.exists()) {
-					//System.out.println("第"+ fold +"折的trainsL1 文件生成！");
-					break;
-				}
-			}
-			List<PuPattern> patterns1 = PatternGen.genTrain_XPuPatterns(inss ,fold, 1);
-			
-			// 在train_1上挖closed frequent pattern 
-			transFile = new File(Constant.PU_TRAIN_L0_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX);
-			while (true) {
-				if (transFile.exists()) {
-					//System.out.println("第"+ fold +"折的trainsL1 文件生成！");
-					break;
-				}
-			}
-			List<PuPattern> patterns0 = PatternGen.genTrain_XPuPatterns(inss ,fold, 0);
-			
-			/*// 计算pattern的suppL0和suppL1
-			for (Instance ins : trainC_1) {
-				for (PuPattern pattern : patterns1) {
-					if (FitJudger.isFit(ins, pattern)) {
-						pattern.incrSuppL1();		// L1的instance满足pattern，suppL1++
+				TransactionGen.genL_X_PuTransactionFile(trainC_fit, fold, classVal);
+				
+				File file = new File(Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold + Constant.TRANS_PATH + classVal + Constant.TYPE_POSTFIX);
+				while (true) {
+					if (file.exists()) {
+						break;
 					}
 				}
-				for (PuPattern pattern : patterns0) {
-					if (FitJudger.isFit(ins, pattern)) {
-						pattern.incrSuppL1();		// L1的instance满足pattern，suppL1++
+				
+				List<PuPattern> patternsX = PatternGen.genTrain_XPuPatterns(inss ,fold, classVal);
+				
+				// filter, 根据nofit和fit共同来过滤pattern
+				patternsX = PuFilter.filter(trainC_fit, trainC_nofit, patternsX, test, Constant.recall);
+				
+				// 求所有Lx上的并集
+				for (PuPattern pat : patternsX) {
+					if (!union.containsKey(pat.pName())) {
+						union.put(pat.pName(), pat);
 					}
 				}
 			}
-			for (Instance ins : trainC_0) {
-				for (PuPattern pattern : patterns1) {
-					if (FitJudger.isFit(ins, pattern)) {
-						pattern.incrSuppL0();		// L0的instance满足pattern，suppL0++
-					}
-				}
-				for (PuPattern pattern : patterns0) {
-					if (FitJudger.isFit(ins, pattern)) {
-						pattern.incrSuppL0();		// L0的instance满足pattern，suppL0++
-					}
-				}
-			}*/
-			
-			// filter
-			patterns1 = PuFilter.filter1(trainC_1, trainC_0, patterns1, test, Constant.recall);
-			patterns0 = PuFilter.filter0(trainC_1, trainC_0, patterns0, test, Constant.recall);
-			// 求L0pattern和L1pattern的并集
-			Map<String, PuPattern> union = new HashMap<String, PuPattern>();
-			for (PuPattern pat : patterns1) {
-				union.put(pat.pName(), pat);
-			}
-			for (PuPattern pat : patterns0) {
-				if (!union.containsKey(pat.pName())) {
-					union.put(pat.pName(), pat);
-				}
-			}
-			patterns1 = new ArrayList<PuPattern>(union.values());
+			List<PuPattern> patterns = new ArrayList<PuPattern>(union.values());
 			
 			/*for (PuPattern puPattern : patterns1) {
 				System.out.println(puPattern.pItems());
 			}*/
 			
 			// 根据supportU排序
-			patterns1 = PuFilter.CalculateAndSortBySuppU(patterns1, test);
+			patterns = PuFilter.CalculateAndSortBySuppU(patterns, test);
 			
 			// 根据coverage选取pattern
-			patterns1 = PuFilter.filterByCoverage(train, patterns1, Constant.delta);
+			patterns = PuFilter.filterByCoverage(train, patterns, Constant.delta);
 			
 			if (Constant.debug_pu_pattern) {
 				System.out.println("-------------------------");
 				System.out.println("pattern | suppL1 | suppL0 | suppU");
-				for (PuPattern pattern : patterns1) {
+				for (PuPattern pattern : patterns) {
 					System.out.println(pattern.pItems() + " | " + pattern.getSuppL1() + " | " + pattern.getSuppL0() + " | " + pattern.getSuppU());
 				}
 			}
@@ -321,7 +277,7 @@ public class PuClassifier extends AbstractClassifier{
 			Map<Integer, Integer> itemCountMap = new HashMap<Integer, Integer>();	// 统计item的cover程度
 			
 			int itemTotal = itemList.size();
-			for (PuPattern pattern : patterns1) {
+			for (PuPattern pattern : patterns) {
 				for (AttrValEntry entry : pattern.entrys()) {
 					if (!itemCountMap.containsKey(entry.getId())) {
 						itemCountMap.put(entry.getId(), 1);
@@ -348,7 +304,7 @@ public class PuClassifier extends AbstractClassifier{
 			for (int i = 0; i < train.numInstances(); i++) {
 				int coverNPattern = 0;
 				Instance instance = train.instance(i);
-				for (PuPattern pattern : patterns1) {
+				for (PuPattern pattern : patterns) {
 					if (FitJudger.isFit(instance, pattern)) {
 						coverNPattern++;
 					}
@@ -362,8 +318,8 @@ public class PuClassifier extends AbstractClassifier{
 	//*********************************************************************************************
 			
 			// 增广instance
-			Instances augTrain = TransactionAug.augmentDataset(patterns1, train);
-			Instances augTest = TransactionAug.augmentDataset(patterns1, test);
+			Instances augTrain = TransactionAug.augmentDataset(patterns, train);
+			Instances augTest = TransactionAug.augmentDataset(patterns, test);
 			
 			// 分类
 			Evaluation eval = new Evaluation(augTrain);
@@ -458,7 +414,7 @@ public class PuClassifier extends AbstractClassifier{
 	}
 	
 	public static void main(String[] args) {
-		PuClassifier eval = new PuClassifier(new WLSVM());
+		PuClassifier eval = new PuClassifier(Constant.CLASSIFIER);
 		try {
 			eval.evaluateOrigin();
 			eval.evaluateFP();
