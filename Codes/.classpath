@@ -2,11 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="H:/工作/实习/Etouch Intern/Suishen_Marketing_v1.0/WebContent/WEB-INF/lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="E:/myeclipse/sunweb/web-app/WEB-INF/lib/mysql-connector-java-3.1.11-bin.jar"/>
-	<classpathentry kind="lib" path="D:/开发软件/java/ostermillerutils-1.08.02-bin/ostermillerutils-1.08.02/ostermillerutils-1.08.02.jar"/>
+	<classpathentry kind="lib" path="E:/pulearning_codes_2015/codes/Codes/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="E:/pulearning_codes_2015/codes/Codes/lib/libsvm.jar"/>
+	<classpathentry kind="lib" path="E:/pulearning_codes_2015/codes/Codes/lib/wlsvm.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Weka-3-6/weka.jar" sourcepath="C:/Program Files/Weka-3-6/weka-src.jar"/>
-	<classpathentry kind="lib" path="E:/weka/svm包/Weka-3-6/libsvm.jar"/>
-	<classpathentry kind="lib" path="E:/weka/svm包/Weka-3-6/wlsvm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

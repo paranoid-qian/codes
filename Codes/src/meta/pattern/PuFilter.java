@@ -15,7 +15,7 @@ public class PuFilter {
 	
 	
 	/**
-	 * 过滤LX上生成的pattern
+	 * 过滤L_x上生成的pattern
 	 * @param trainC_1
 	 * @param trainC_0
 	 * @param patterns
@@ -23,7 +23,7 @@ public class PuFilter {
 	 * @param recall
 	 * @return
 	 */
-	public static List<PuPattern> filter(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, Instances test, double recall) {
+	public static List<PuPattern> filter(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, double recall) {
 		
 		// 挑选超过recall的pattern作为候选pattern
 		List<PuPattern> filteredPatterns = filterByRecall(trainCX, trainC_X, patterns, recall);

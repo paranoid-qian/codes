@@ -37,7 +37,6 @@ public class TransactionAug {
 		}
 		// ²åÈëĞÂµÄattributes values
 		for (int i = 0; i < copy.numInstances(); i++) {
-			int coverNPattern = 0;
 			
 			Instance ins = copy.instance(i);
 			int index = newAttrStart;

@@ -103,7 +103,7 @@ public class TransactionGen {
 	 * @param flag
 	 * @param fold
 	 * @throws Exception
-	 */
+	 *//*
 	public static void genCpTrainTransaction(Instances train, int fold) throws Exception {
 		inss = InstanceLoader.loadInstances();
 		if (itemMap == null) {
@@ -132,6 +132,6 @@ public class TransactionGen {
 		}
 		bWriter.flush();
 		bWriter.close();
-	}
+	}*/
 	
 }

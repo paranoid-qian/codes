@@ -31,7 +31,7 @@ public class InstanceLoader {
 		Instances newInss = loader.getDataSet();
 		newInss.setClassIndex(newInss.numAttributes()-1);
 		
-		// 加载attribute的下表，供后续使用
+		// 加载attribute的下标，供后续使用
 		loadAttrIndexs(newInss); 
 		
 		// Discretize number attributes
