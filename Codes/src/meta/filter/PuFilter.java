@@ -1,4 +1,4 @@
-package meta.pattern;
+package meta.filter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class PuFilter {
-	
 	
 	/**
 	 * 过滤L_x上生成的pattern
@@ -60,35 +59,6 @@ public class PuFilter {
 		return filteredPatterns;
 	}
 	
-	
-	/**
-	 * 根据suppU排序pattern
-	 * @param filteredPatterns
-	 * @param test
-	 * @return
-	 */
-	public static List<PuPattern> CalculateAndSortBySuppU(List<PuPattern> filteredPatterns, Instances test) {
-		// 计算pattern在U上的support值并写到pattern的suppU字段
-		for (int i = 0; i < test.numInstances(); i++) {
-			Instance ins = test.instance(i);
-			for (PuPattern pattern : filteredPatterns) {
-				if (FitJudger.isFit(ins, pattern)) {
-					pattern.incrSuppU();
-				}
-			}
-		}
-		// 按照suppU降序排列
-		Collections.sort(filteredPatterns, new Comparator<PuPattern>() {
-			@Override
-			public int compare(PuPattern p0, PuPattern p1) {
-				return p0.getSuppU() - p1.getSuppU();
-			}
-		});
-		
-		return filteredPatterns;
-	}
-	
-	
 	/**
 	 * 根据trainL中cover的instances的情况，挑选pattern作为最终的feature
 	 * @param train
@@ -96,9 +66,26 @@ public class PuFilter {
 	 * @param delta
 	 * @return
 	 */
-	public static List<PuPattern> filterByCoverage(Instances train, List<PuPattern> patterns, int delta) {
+	public static List<PuPattern> filterByCoverage(Instances train, Instances test, List<PuPattern> patterns, int delta) {
 		List<PuPattern> rst = new ArrayList<PuPattern>();
+		// 计算pattern在U上的support值并写到pattern的suppU字段
+		for (int i = 0; i < test.numInstances(); i++) {
+			Instance ins = test.instance(i);
+			for (PuPattern pattern : patterns) {
+				if (pattern.isFit(ins)) {
+					pattern.incrSuppU();
+				}
+			}
+		}
+		// 按照suppU降序排列
+		Collections.sort(patterns, new Comparator<PuPattern>() {
+			@Override
+			public int compare(PuPattern p0, PuPattern p1) {
+				return p0.getSuppU() - p1.getSuppU();
+			}
+		});
 		
+		// 统计coverage挑选pattern
 		Map<Instance, Integer> coverageCountMap = new HashMap<Instance, Integer>();
 		for (int i=0; i<train.numInstances(); i++) {
 			Instance ins = train.instance(i);
@@ -127,7 +114,7 @@ public class PuFilter {
 			int curMin = Integer.MAX_VALUE;
 			for (int i=0; i<train.numInstances(); i++) {
 				Instance ins = train.instance(i);
-				if (FitJudger.isFit(ins, p)) {
+				if (p.isFit(ins)) {
 					int newCount = coverageCountMap.get(ins) + 1;
 					coverageCountMap.put(ins, newCount);
 				}

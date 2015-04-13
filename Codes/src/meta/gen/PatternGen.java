@@ -1,12 +1,11 @@
-package meta.pattern;
+package meta.gen;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import meta.entity.PuPattern;
 import meta.util.constants.Constant;
-import meta.util.loader.PatternLoader;
+import weka.core.Instance;
 import weka.core.Instances;
 
 public class PatternGen {
@@ -18,10 +17,17 @@ public class PatternGen {
 	 * @param fold
 	 * @param c0_OR_c1
 	 * @return
+	 * @throws Exception 
 	 */
-	public static void genTrain_XPuPatterns(Instances inss, int fold, double c_x) {
-		String src = Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold + Constant.TRANS_PATH + c_x + Constant.TYPE_POSTFIX;
+	public static void genTrain_XPuPatterns(List<Instance> trainC_fit, int fold, double c_x) throws Exception {
 		
+		TransactionGen.genL_X_PuTransactionFile(trainC_fit, fold, c_x);
+		File transFile = null;
+		while (transFile == null) {
+			transFile = new File(Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold + Constant.TRANS_PATH + c_x + Constant.TYPE_POSTFIX);
+		}
+		
+		String src = Constant.PU_TRAIN_LX_TRANSACTION_FOLDER + fold + Constant.TRANS_PATH + c_x + Constant.TYPE_POSTFIX;
 		String destFolder = Constant.PU_TRAIN_LX_PATTERN_FILE_FOLDER + fold;
 		File file = new File(destFolder);
 		if (!file.exists() && !file.isDirectory()) {
@@ -51,8 +57,16 @@ public class PatternGen {
 	 * @param inss
 	 * @param fold
 	 * @return
+	 * @throws Exception 
 	 */
-	public static void genTrain_XFpPatterns(Instances inss, int fold) {
+	public static void genTrain_XFpPatterns(Instances train, int fold) throws Exception {
+		
+		// 生成train_x上的transaction文件
+		TransactionGen.genFpTrainTransaction(train, fold);
+		File transFile = null; 
+		while (transFile == null) {
+			transFile = new File(Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX);
+		}
 		String src = Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		String dest = Constant.FP_TRAIN_PATTERN_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		

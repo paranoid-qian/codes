@@ -2,8 +2,9 @@ package meta.classifier;
 
 import java.io.File;
 
-import meta.item.ItemGen;
+import meta.gen.ItemGen;
 import meta.util.constants.Constant;
+import meta.util.loader.AttributeLoader;
 import meta.util.loader.InstanceLoader;
 import weka.core.Instances;
 
@@ -15,29 +16,42 @@ public abstract class AbstractClassifier {
 	public AbstractClassifier() {
 		try {
 			data = InstanceLoader.loadInstances();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// 检查文件夹是否存在，否则建立文件夹
-		checkItemFolder();
-		checkFpFolders();
-		//checkCpFolders();
-		
-		// 构造items
-		try {
+			AttributeLoader.loadAttrIndexs(data);
+			
+			// 检查文件夹是否存在，否则建立文件夹
+			checkItemFolder();
+			checkFpFolders();
+			
 			item_count = ItemGen.genItems(data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private void init() {
+		try {
+			// load instance
+			data = InstanceLoader.loadInstances();
+			// load attribute indices
+			AttributeLoader.loadAttrIndexs(data);
+			// check folders
+			checkItemFolder();
+			checkFpFolders();
+			
+			// gen items
+			item_count = ItemGen.genItems(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	// Check item folder
 	private void checkItemFolder() {
-		// item folder
 		File file = new File(Constant.ITEMS_FOLDER);
 		if (!file.exists() && !file.isDirectory()) {
 			file.mkdirs();
-		} else {
-			System.out.println("ok");
 		}
 	}
 	
@@ -63,19 +77,5 @@ public abstract class AbstractClassifier {
 			file.mkdirs();
 		}
 	}
-	
-//	private void checkCpFolders() {
-//		// fp trans folder
-//		File file = new File(Constant.CP_TRAIN_TRANSACTION_FOLDER);
-//		if (!file.exists() && !file.isDirectory()) {
-//			file.mkdirs();
-//		}
-//		// fp pattern folder
-//		file = new File(Constant.CP_TRAIN_PATTERN_FOLDER);
-//		if (!file.exists() && !file.isDirectory()) {
-//			file.mkdirs();
-//		}
-//	}
-	
 	
 }

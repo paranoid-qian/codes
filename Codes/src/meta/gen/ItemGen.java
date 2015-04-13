@@ -1,4 +1,4 @@
-package meta.item;
+package meta.gen;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,7 +13,7 @@ import weka.core.Instances;
 
 
 /**
- * 生成attr-val对，并把对写入到文件中
+ * 生成attribute-value对，并把对写入到文件中
  * @author paranoid
  *
  */

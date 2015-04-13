@@ -7,6 +7,7 @@ import weka.core.Utils;
 
 public class Evaluator {
 	
+	/* EvalRst(inner class) for store evaluating result */
 	public static class EvalRst {
 		private double precision;
 		private double recall;
@@ -38,7 +39,7 @@ public class Evaluator {
 	}
 	
 	/**
-	 * @param eval
+	 * Factory method for new evaluator
 	 * @param classifier
 	 * @return
 	 */
@@ -47,11 +48,12 @@ public class Evaluator {
 	}
 	
 	/**
-	 * @param augTrain
-	 * @param augTest
+	 * Evaluate function
+	 * @param train
+	 * @param test
 	 * @throws Exception
 	 */
-	public void eval(Instances train, Instances test) throws Exception {
+	public void eval(Instances train, Instances test) throws Exception{
 		Evaluation eval = new Evaluation(train);
 		Classifier cls = Classifier.makeCopy(classifier);
 		cls.buildClassifier(train);
@@ -74,24 +76,17 @@ public class Evaluator {
 		return sb.toString();
 	}
 	
-	/**
-	 * @return
-	 */
-	public double precision() {
+	
+	// get average precision
+	private double precision() {
 		return this.rst.precision/this.evalTimes;
 	}
-	
-	/**
-	 * @return
-	 */
-	public double recall() {
+	// get average recall
+	private double recall() {
 		return this.rst.recall/this.evalTimes;
 	}
-	
-	/**
-	 * @return
-	 */
-	public double fMeasure() {
+	// get average f-measure
+	private double fMeasure() {
 		return this.rst.fMeasure/this.evalTimes;
 	}
 	

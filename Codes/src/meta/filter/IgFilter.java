@@ -1,4 +1,4 @@
-package meta.pattern;
+package meta.filter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +81,7 @@ public class IgFilter {
 			int curMin = Integer.MAX_VALUE;
 			for (int i=0; i<train.numInstances(); i++) {
 				Instance ins = train.instance(i);
-				if (FitJudger.isFit(ins, p)) {
+				if (p.isFit(ins)) {
 					int newCount = coverageCountMap.get(ins) + 1;
 					coverageCountMap.put(ins, newCount);
 				}
@@ -119,7 +119,7 @@ public class IgFilter {
 		List<Instance> nofitInstances = new ArrayList<Instance>();
 		for (int i = 0; i < train.numInstances(); i++) {
 			Instance ins = train.instance(i);
-			if (FitJudger.isFit(ins, pattern)) {
+			if (pattern.isFit(ins)) {
 				fitInstances.add(ins);
 			} else {
 				nofitInstances.add(ins);

@@ -16,9 +16,6 @@ public interface Constant {
 	public static final long s = System.currentTimeMillis();
 	public static final Random rand = new Random(1428397866835L); // 1415678605768L/1415678962610L
 	
-	/* 分类器 */
-	public static final Classifier CLASSIFIER = new NaiveBayes();
-	
 	public static final int minSupport = 15;	// 挖CPF时：min_support
 	public static final double recall = 0.4;	// 过滤CFP：recall
 	public static final int pu_delta = 1;		// U过滤时：pu_delta
@@ -51,9 +48,9 @@ public interface Constant {
 	public static final String FP_TRAIN_TRANSACTION_FOLDER = TOP_FOLDER+ DATASET +"\\fp\\trans";
 	public static final String FP_TRAIN_PATTERN_FOLDER = TOP_FOLDER+ DATASET +"\\fp\\pattern";
 	
-	/* fp ig trans and pattern */
-	public static final String FP_IG_TRAIN_TRANSACTION_FOLDER = TOP_FOLDER+ DATASET +"\\fpig\\trans";
-	public static final String FP_IG_TRAIN_PATTERN_FOLDER = TOP_FOLDER+ DATASET +"\\fpig\\pattern";
+	/* fp ig trans and pattern，可以直接利用fp的*/
+	public static final String FP_IG_TRAIN_TRANSACTION_FOLDER = FP_TRAIN_TRANSACTION_FOLDER; //TOP_FOLDER+ DATASET +"\\fpig\\trans";
+	public static final String FP_IG_TRAIN_PATTERN_FOLDER = FP_TRAIN_PATTERN_FOLDER; //TOP_FOLDER+ DATASET +"\\fpig\\pattern";
 	
 //	public static final String CP_TRAIN_TRANSACTION_FOLDER = TOP_FOLDER + DATASET +"\\cp\\trans";
 //	public static final String CP_TRAIN_PATTERN_FOLDER = TOP_FOLDER + DATASET +"\\cp\\pattern";

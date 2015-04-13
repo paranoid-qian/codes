@@ -1,4 +1,4 @@
-package meta.transaction;
+package meta.gen;
 
 import java.io.BufferedWriter;
 import java.io.File;
