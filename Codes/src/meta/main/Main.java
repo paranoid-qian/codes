@@ -2,6 +2,7 @@ package meta.main;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
+import wlsvm.WLSVM;
 import meta.classifier.BaseClassifier;
 
 public class Main {
@@ -17,7 +18,7 @@ public class Main {
 		try {
 			eval.evaluateOrigin();
 			eval.evaluateFP();
-			eval.evaluateFPIG();
+			//eval.evaluateFPIG();
 			eval.evaluatePu();
 			//c45.evaluateCP();
 		} catch (Exception e) {

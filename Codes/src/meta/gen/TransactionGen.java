@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
-import meta.entity.AttrValEntry;
+import meta.entity.Item;
 import meta.util.constants.Constant;
 import meta.util.loader.InstanceLoader;
 import meta.util.loader.ItemLoader;
@@ -15,7 +15,7 @@ import weka.core.Instances;
 
 public class TransactionGen {
 	
-	private static Map<String, Map<String, AttrValEntry>> itemMap = null;
+	private static Map<String, Map<String, Item>> itemMap = null;
 	private static Instances inss;
 	
 	/**
@@ -46,7 +46,7 @@ public class TransactionGen {
 			for (int i = 0; i < numAttributes-1; i++) {
 				String attrName = instance.attribute(i).name();
 				String attrVal = instance.stringValue(i);
-				AttrValEntry e = itemMap.get(attrName).get(attrVal);
+				Item e = itemMap.get(attrName).get(attrVal);
 				if (e != null) {
 					int itemId = e.getId();
 					sb.append(itemId + " ");
@@ -83,7 +83,7 @@ public class TransactionGen {
 			for (int j = 0; j < numAttributes-1; j++) {
 				String attrName = instance.attribute(j).name();
 				String attrVal = instance.stringValue(j);
-				AttrValEntry e = itemMap.get(attrName).get(attrVal);
+				Item e = itemMap.get(attrName).get(attrVal);
 				if (e != null) {
 					int itemId = e.getId();
 					sb.append(itemId + " ");

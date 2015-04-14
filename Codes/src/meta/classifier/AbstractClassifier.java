@@ -14,20 +14,11 @@ public abstract class AbstractClassifier {
 	protected int item_count;
 	
 	public AbstractClassifier() {
-		try {
-			data = InstanceLoader.loadInstances();
-			AttributeLoader.loadAttrIndexs(data);
-			
-			// 检查文件夹是否存在，否则建立文件夹
-			checkItemFolder();
-			checkFpFolders();
-			
-			item_count = ItemGen.genItems(data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		init();
 	}
 	
+	
+	// initiate
 	private void init() {
 		try {
 			// load instance
@@ -45,8 +36,6 @@ public abstract class AbstractClassifier {
 		}
 	}
 	
-	
-	
 	// Check item folder
 	private void checkItemFolder() {
 		File file = new File(Constant.ITEMS_FOLDER);
@@ -55,6 +44,7 @@ public abstract class AbstractClassifier {
 		}
 	}
 	
+	// check fp folders
 	private void checkFpFolders() {
 		// fp trans folder
 		File file = new File(Constant.FP_TRAIN_TRANSACTION_FOLDER);

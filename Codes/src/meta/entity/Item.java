@@ -5,7 +5,7 @@ package meta.entity;
  * @author paranoid
  *
  */
-public class AttrValEntry {
+public class Item {
 	
 	/* entry id */
 	private int id;
@@ -17,7 +17,7 @@ public class AttrValEntry {
 	private String val;
 	
 	
-	public AttrValEntry(int id, String attr, String val) {
+	public Item(int id, String attr, String val) {
 		this.setId(id);
 		this.setAttr(attr);
 		this.setVal(val);

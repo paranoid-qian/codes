@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import meta.entity.AttrValEntry;
+import meta.entity.Item;
 import meta.entity.Pattern;
 import meta.entity.PuPattern;
 import meta.util.constants.Constant;
@@ -17,7 +17,7 @@ public class PatternLoader {
 	private static BufferedReader bReader = null;
 	
 	/* attribute value pairs (reverse) */
-	private static Map<Integer, AttrValEntry> reverseMap = null;
+	private static Map<Integer, Item> reverseMap = null;
 	
 	
 	
@@ -73,7 +73,7 @@ public class PatternLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static List<PuPattern> loadTrain_L_FoldX_PuPatterns(Instances inss, int fold, double c_x) throws IOException {
+	public static List<PuPattern> loadPuPatterns4Fold4L_x(Instances inss, int fold, double c_x) throws IOException {
 		String src = Constant.PU_TRAIN_LX_PATTERN_FILE_FOLDER + fold + Constant.PATS_PATH + c_x+ Constant.TYPE_POSTFIX;
 		
 		bReader = new BufferedReader(new FileReader(src));

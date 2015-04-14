@@ -14,20 +14,24 @@ import meta.util.constants.Constant;
  */
 public class Pattern {
 	
-	/* pattern, 1 pat per line */
-	private List<AttrValEntry> entryList;
-	/* pattern information gain value, default 0.0 */
+	// pattern, 1 pat per line
+	private List<Item> itemsList;
+	// pattern information gain value, default 0.0
 	private double ig;
-	/* global support value */
+	// global support value
 	private int support;
-	/* pattern attribute and value */
-	private String pAttr;
+	// pattern attribute and value 
+	private String pName;
+	// item ids
+	private String pId;
+	
+	
 	
 	public Pattern() {
-		entryList = new ArrayList<AttrValEntry>();
+		itemsList = new ArrayList<Item>();
 		this.ig = 0;
 		this.support = 0;
-		this.pAttr = null;
+		this.pName = null;
 	}
 	
 	/**
@@ -35,10 +39,17 @@ public class Pattern {
 	 * @return
 	 */
 	public String pName() {
-		if (this.pAttr == null) {
+		if (this.pName == null) {
 			resolve();
 		}
-		return pAttr;
+		return pName;
+	}
+	
+	public String pId() {
+		if (this.pId == null) {
+			resolve();
+		}
+		return pId;
 	}
 	
 	/**
@@ -47,7 +58,7 @@ public class Pattern {
 	 * @return
 	 */
 	public boolean isFit(Instance ins) {
-		for (AttrValEntry entry : this.entrys()) {
+		for (Item entry : this.entrys()) {
 			int id = AttributeIndexs.get(entry.getAttr());
 			String v = ins.stringValue(id);
 			if (!v.equals(entry.getVal())) {
@@ -66,12 +77,12 @@ public class Pattern {
 		return isFit(ins) ? Constant.FIT : Constant.NO_FIT;
 	}
 	
-	public void addEntry(AttrValEntry entry) {
-		entryList.add(entry);
+	public void addEntry(Item entry) {
+		itemsList.add(entry);
 	}
 
-	public List<AttrValEntry> entrys() {
-		return this.entryList;
+	public List<Item> entrys() {
+		return this.itemsList;
 	}
 	
 	public void setIg(double ig) {
@@ -93,11 +104,16 @@ public class Pattern {
 	// Resolve pattern attribute name
 	private void resolve() {
 		StringBuilder name = new StringBuilder("");
-		for (AttrValEntry entry : entryList) {
+		StringBuilder id = new StringBuilder("");
+		for (Item entry : itemsList) {
 			name.append(entry.getAttr() + "=" + entry.getVal() + "&");
+			id.append(entry.getId() + " ");
 		}
 		name.replace(name.length()-1, name.length(), "");
-		this.pAttr = name.toString();
+		this.pName = name.toString();
+		this.pId = id.toString();
 	}
+
+	
 	
 }

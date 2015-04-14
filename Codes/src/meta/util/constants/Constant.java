@@ -1,34 +1,49 @@
 package meta.util.constants;
 
 import java.util.Random;
-
-import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.trees.J48;
-import wlsvm.WLSVM;
-
-public interface Constant {
+public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET ="car";
-	
+	public static final String DATASET = "contraceptive";	
 	/* 随机种子 */
 	public static final long s = System.currentTimeMillis();
-	public static final Random rand = new Random(1428397866835L); // 1415678605768L/1415678962610L
+	public static final Random rand = new Random(1429013465476L); // 1415678605768L/1415678962610L
 	
-	public static final int minSupport = 15;	// 挖CPF时：min_support
-	public static final double recall = 0.4;	// 过滤CFP：recall
+	
+	// 折数 
+	public static final int numFolds = 5;
+	// 挖CPF时：min_support
+	public static final int minSupport = 30;	
+	
+	// pattern至少要包含几个item
+	public static final int itemMinCount = 2;
+	public static final int puItemMinCount = 3;
+	
+	// item coverage
+	public static final double item_coverage = 1;
+	
+	
+	//public static final double recall = 0.4;	// 过滤CFP：recall
 	public static final int pu_delta = 1;		// U过滤时：pu_delta
 	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
-	/* 折数 */
-	public static final int numFolds = 10;
+	
+	/* instance coverage */
+	public static final double instance_coverage = 0.90;
+	public static final int coverage_delta = 1;	// 至少有coverage_delta次coverage，才算一个instance被coverage
+	
+	public static final boolean debug_pattern_dx = false;	// 开启后输出pattern和相应的dx
+	public static final boolean deubg_pattern_filterd = false;	// 开启后输出pattern（过滤后）
+	public static final boolean debug_item_coverage = false;	// 开启后输出item_coverage值
+	
 	
 //	// cp
 //	public static final double minCosine = 0.2;
 //	public static final double minCosineSupport = 0;
 	
 	/* DEBUG */
+	
+	
 	public static final boolean debug_pu_pattern = false;		/* 开启后输出具体的pu方法的每折pattern */
 	public static final boolean debug_origin_summary = false;	/* 开启后输出eval的summary */
 	public static final boolean debug_cmd_pu = false;			/* 开启后输出挖掘CFP时的cmd命令 */

@@ -1,5 +1,6 @@
 package meta.filter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,7 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import meta.entity.Item;
 import meta.entity.PuPattern;
+import meta.util.constants.Constant;
+import meta.util.loader.ItemLoader;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -21,7 +25,7 @@ public class PuFilter {
 	 * @param test
 	 * @param recall
 	 * @return
-	 */
+	 *//*
 	public static List<PuPattern> filter(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, double recall) {
 		
 		// 挑选超过recall的pattern作为候选pattern
@@ -29,11 +33,11 @@ public class PuFilter {
 		//filteredPatterns = CalculateAndSortBySuppU(filteredPatterns, test);
 		// 统计值
 		int trainCount = trainCX.size() + trainC_X.size();
-		/*System.out.println("recall阈值:" + recall + "(" + recall*trainCount + ")");
+		System.out.println("recall阈值:" + recall + "(" + recall*trainCount + ")");
 		System.out.println("L0:" + trainC_0.size());
-		System.out.println("L1:" + trainC_1.size());*/
+		System.out.println("L1:" + trainC_1.size());
 		return filteredPatterns;
-	}
+	}*/
 	
 	
 	/**
@@ -41,7 +45,7 @@ public class PuFilter {
 	 * @param train
 	 * @param recall
 	 * @return
-	 */
+	 *//*
 	private static List<PuPattern> filterByRecall(List<Instance> trainCX, List<Instance> trainC_X, List<PuPattern> patterns, double recall) {
 		List<PuPattern> filteredPatterns = new ArrayList<PuPattern>();
 		
@@ -57,7 +61,38 @@ public class PuFilter {
 		}
 		
 		return filteredPatterns;
+	}*/
+	
+	public static List<PuPattern> filterByInstanceCoverage(Instances test, List<PuPattern> patterns, double coverage) {
+		
+		return patterns;
 	}
+	
+	public static List<PuPattern> filterByItemCoverage(Instances inss, List<PuPattern> inputPatterns, double coverage) throws IOException {
+		List<Item> itemList = new ArrayList<>(ItemLoader.loadItemsByReverse(inss).values());	// 全局item
+		
+		List<PuPattern> filteredPatterns = new ArrayList<>();	// output result list
+		Map<Integer, Integer> itemCountMap = new HashMap<>();	// map to count items' coverage
+		double threshold = itemList.size() * coverage;
+		int coveredItems = 0;
+		for (PuPattern pattern : inputPatterns) {
+			if ((double)coveredItems >= threshold) {	// if satisfy, break
+				if (Constant.debug_item_coverage) {
+					System.out.println("Item coverage: " + coveredItems + "/" + itemList.size());
+				}
+				break;
+			}
+			// count item coverage
+			for (Item item : pattern.entrys()) {
+				if (!itemCountMap.containsKey(item.getId())) {	
+					coveredItems++;
+				}
+			}
+			filteredPatterns.add(pattern);
+		}
+		return filteredPatterns;
+	}
+	
 	
 	/**
 	 * 根据trainL中cover的instances的情况，挑选pattern作为最终的feature
@@ -65,7 +100,7 @@ public class PuFilter {
 	 * @param patterns
 	 * @param delta
 	 * @return
-	 */
+	 *//*
 	public static List<PuPattern> filterByCoverage(Instances train, Instances test, List<PuPattern> patterns, int delta) {
 		List<PuPattern> rst = new ArrayList<PuPattern>();
 		// 计算pattern在U上的support值并写到pattern的suppU字段
@@ -125,7 +160,7 @@ public class PuFilter {
 			min = curMin;
 		}
 		return rst;
-	}
+	}*/
 	
 	
 }
