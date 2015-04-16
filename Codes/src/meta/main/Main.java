@@ -21,6 +21,14 @@ public class Main {
 			//eval.evaluateFPIG();
 			eval.evaluatePu();
 			//c45.evaluateCP();
+			
+			
+			/*
+			 * 输出naive和pu方法下分类的具体错误instance
+			 */
+			eval.printErrorDiff();
+		
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

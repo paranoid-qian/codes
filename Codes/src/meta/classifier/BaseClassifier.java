@@ -1,5 +1,6 @@
 package meta.classifier;
 
+import java.security.KeyStore.PrivateKeyEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import jdk.nashorn.internal.ir.TernaryNode;
 import sun.tools.jar.resources.jar;
@@ -23,6 +25,7 @@ import meta.util.constants.Constant;
 import meta.util.loader.ItemLoader;
 import meta.util.loader.PatternLoader;
 import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -31,22 +34,28 @@ public class BaseClassifier extends AbstractClassifier{
 	private Classifier classifier;
 	private int numFolds = Constant.numFolds;
 	
+	private List<Integer> naiveErrorList = new ArrayList<>();
+	private List<Integer> puErrorList = new ArrayList();
+	
+	
 	public BaseClassifier(Classifier classifier) {
 		
 		super();
 		this.classifier = classifier;
+		data.randomize(Constant.rand);
 		// 随机化train和test集
 		if (data.classAttribute().isNominal()) {
 			data.stratify(numFolds);
 		}
-		data.randomize(Constant.rand);
+		
 		// 输出参数
 		System.out.println("random\t" + Constant.s);
 		System.out.println("numFolds\t" + Constant.numFolds);
-		System.out.println("itemMinCount\t" + Constant.itemMinCount);
-		System.out.println("puItemMinCount\t" + Constant.puItemMinCount);
+		System.out.println("itemMaxCount\t" + Constant.itemMaxCount);
+		System.out.println("puItemMaxCount\t" + Constant.puItemMaxCount);
 		System.out.println("min_support\t" + Constant.minSupport);
-		System.out.println("item coverage\t" + Constant.item_coverage);
+		System.out.println("puMin_support\t" + Constant.puMinSupport);
+		System.out.println("instance coverage\t" + Constant.instance_coverage);
 	}
 	
 	
@@ -62,6 +71,9 @@ public class BaseClassifier extends AbstractClassifier{
 			Instances test = inss.trainCV(numFolds, i);
 			Instances train = inss.testCV(numFolds, i);
 			eval.eval(train, test);
+			
+			// eval for instance error
+			//eval.eval4Instances(train, test, naiveErrorList);
 		}
 		System.out.println(eval.formatEvalRst());
 	}
@@ -84,6 +96,17 @@ public class BaseClassifier extends AbstractClassifier{
 			
 			// load train_x pattern
 			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);
+			
+			// 计算cover instance程度
+			for (Pattern pattern : patterns) {
+				for (int i = 0; i < test.numInstances(); i++) {
+					if (pattern.isFit(test.instance(i))) {
+						pattern.incrCoveredU();
+					}
+				}
+				System.out.println("fold-" + fold + ": " + pattern.pId() + " || coveredU=" + pattern.getCoveredU() + "/" + test.numInstances());
+			}
+			
 			
 			// 增广instance
 			Instances augTrain = TransactionAug.augmentDataset(patterns, train);
@@ -188,12 +211,13 @@ public class BaseClassifier extends AbstractClassifier{
 			}
 			
 			// filter by instance coverage
-			patterns = PuFilter.filterByItemCoverage(inss, patterns, Constant.item_coverage);
+			//patterns = PuFilter.filterByItemCoverage(inss, patterns, Constant.item_coverage);
+			patterns = PuFilter.filterByInstanceCoverage(test, patterns, Constant.instance_coverage);
 			
 			if (Constant.deubg_pattern_filterd) {
 				// print patterns
 				for (PuPattern pattern : patterns) {
-					System.out.println("fold-" + fold + ": " + pattern.pId());
+					System.out.println("fold-" + fold + ": " + pattern.pId() + " || D(x)=" + pattern.getDx() + " || coveredU=" + pattern.getCoveredU() + "/" + test.numInstances());
 				}
 			}
 			
@@ -203,6 +227,10 @@ public class BaseClassifier extends AbstractClassifier{
 			
 			// evaluate
 			eval.eval(augTrain, augTest);
+			
+			// eval for dive analysis
+			//eval.eval4Instances(augTrain, augTest, puErrorList);
+			
 		}
 		System.out.println(eval.formatEvalRst());
 		System.out.println("\n----------------------------");
@@ -241,12 +269,27 @@ public class BaseClassifier extends AbstractClassifier{
 				}
 			}
 		}
-		
 		// dx
 		int dSize = inss.numInstances();
+		int lSize = instanceListL_x.size();
 		for (PuPattern pattern : patterns4Fold4L_x) {
-			double dx = pattern.getSuppL1() * Math.log(dSize/pattern.getSuppD());
+			double dx = pattern.getSuppL1() * Math.log(dSize/pattern.getSuppD()) / lSize;
 			pattern.setDx(dx);
 		}
 	}
+
+	
+	public void printErrorDiff() {
+		System.out.println("naive classifier errors: ");
+		for (Integer i : naiveErrorList) {
+			System.out.print(i + ",");
+		}
+		System.out.println("\n---------------------------");
+		System.out.println("pu classifier errors: ");
+		for (Integer i : puErrorList) {
+			System.out.print(i + ",");
+		}
+		System.out.println("\n---------------------------");
+	}
+
 }

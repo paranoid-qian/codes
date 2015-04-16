@@ -4,36 +4,41 @@ import java.util.Random;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "contraceptive";	
+	public static final String DATASET = "autos";	
 	/* 随机种子 */
-	public static final long s = System.currentTimeMillis();
-	public static final Random rand = new Random(1429013465476L); // 1415678605768L/1415678962610L
+	public static long s = System.currentTimeMillis();
+	//static { s = 1429167720368L;}
+	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	
 	// 折数 
-	public static final int numFolds = 5;
+	public static final int numFolds = 4;
 	// 挖CPF时：min_support
-	public static final int minSupport = 30;	
+	public static final int minSupport = 35;
+	public static final int puMinSupport = 50;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;
-	public static final int puItemMinCount = 3;
+	public static final int puItemMinCount = 2;
+
+	public static final int itemMaxCount = 6;
+	public static final int puItemMaxCount = 6;
 	
 	// item coverage
-	public static final double item_coverage = 1;
-	
+	public static final double item_coverage = 0.3;
+	// instance coverage
+	public static final double instance_coverage = 0.9;
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall
 	public static final int pu_delta = 1;		// U过滤时：pu_delta
 	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	
-	/* instance coverage */
-	public static final double instance_coverage = 0.90;
+	
 	public static final int coverage_delta = 1;	// 至少有coverage_delta次coverage，才算一个instance被coverage
 	
 	public static final boolean debug_pattern_dx = false;	// 开启后输出pattern和相应的dx
-	public static final boolean deubg_pattern_filterd = false;	// 开启后输出pattern（过滤后）
+	public static final boolean deubg_pattern_filterd = true;	// 开启后输出pattern（过滤后）
 	public static final boolean debug_item_coverage = false;	// 开启后输出item_coverage值
 	
 	

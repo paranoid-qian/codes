@@ -26,6 +26,10 @@ public class Pattern {
 	private String pId;
 	
 	
+	private int coveredU;
+	public void incrCoveredU() {
+		this.coveredU++;
+	}
 	
 	public Pattern() {
 		itemsList = new ArrayList<Item>();
@@ -112,6 +116,14 @@ public class Pattern {
 		name.replace(name.length()-1, name.length(), "");
 		this.pName = name.toString();
 		this.pId = id.toString();
+	}
+
+	public int getCoveredU() {
+		return coveredU;
+	}
+
+	public void setCoveredU(int coveredU) {
+		this.coveredU = coveredU;
 	}
 
 	

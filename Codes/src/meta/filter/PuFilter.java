@@ -63,9 +63,26 @@ public class PuFilter {
 		return filteredPatterns;
 	}*/
 	
-	public static List<PuPattern> filterByInstanceCoverage(Instances test, List<PuPattern> patterns, double coverage) {
+	public static List<PuPattern> filterByInstanceCoverage(Instances test, List<PuPattern> inputPatterns, double coverage) {
+		List<PuPattern> filteredPatterns = new ArrayList<>();
+		double threshold = test.numInstances() * coverage;
+		int coveredInstances = 0;
+		for (PuPattern pattern : inputPatterns) {
+			if ((double)coveredInstances >= threshold) {	// if satisfy, break
+				break;
+			}
+			for (int i = 0; i < test.numInstances(); i++) {
+				Instance ins = test.instance(i);
+				if (pattern.isFit(ins)) {
+					coveredInstances++;
+					pattern.incrCoveredU();
+				}
+			}
+			filteredPatterns.add(pattern);
+		}
+				
 		
-		return patterns;
+		return filteredPatterns;
 	}
 	
 	public static List<PuPattern> filterByItemCoverage(Instances inss, List<PuPattern> inputPatterns, double coverage) throws IOException {

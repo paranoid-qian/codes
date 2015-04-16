@@ -10,6 +10,8 @@ public class PuPattern extends Pattern {
 	// pattern在U上的support值
 	private int suppD = 0;
 	
+	private int coveredU = 0;
+	
 	// D(x)值
 	private double dx = 0;
 
@@ -23,6 +25,9 @@ public class PuPattern extends Pattern {
 	}
 	public void incrSuppOther() {
 		this.suppLOther++;
+	}
+	public void incrCoveredU() {
+		this.coveredU++;
 	}
 	
 	// reset操作
@@ -59,6 +64,12 @@ public class PuPattern extends Pattern {
 	}
 	public void setSuppLOther(int suppLOther) {
 		this.suppLOther = suppLOther;
+	}
+	public int getCoveredU() {
+		return coveredU;
+	}
+	public void setCoveredU(int coveredU) {
+		this.coveredU = coveredU;
 	}
 
 }

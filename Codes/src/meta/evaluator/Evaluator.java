@@ -1,7 +1,11 @@
 package meta.evaluator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 
@@ -55,6 +59,7 @@ public class Evaluator {
 	 */
 	public void eval(Instances train, Instances test) throws Exception{
 		Evaluation eval = new Evaluation(train);
+		eval.setPriors(train);
 		Classifier cls = Classifier.makeCopy(classifier);
 		cls.buildClassifier(train);
 		eval.evaluateModel(cls, test);
@@ -63,6 +68,19 @@ public class Evaluator {
 		rst.fMeasure += eval.weightedFMeasure();
 		evalTimes++;
 	}
+	
+	public void eval4Instances(Instances train, Instances test, List<Integer> errorList) throws Exception {
+		Classifier cls = Classifier.makeCopy(classifier);
+		cls.buildClassifier(train);
+		for (int i = 0; i < test.numInstances(); i++) {
+			Instance instance = test.instance(i);
+			double pred = cls.classifyInstance(instance);
+			if (pred != instance.classValue()) {
+				errorList.add(i);
+			}
+		}
+	}
+	
 	
 	/**
 	 * print evaluating result
