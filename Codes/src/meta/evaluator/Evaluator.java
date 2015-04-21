@@ -1,8 +1,8 @@
 package meta.evaluator;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import meta.util.constants.Constant;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -11,44 +11,21 @@ import weka.core.Utils;
 
 public class Evaluator {
 	
-	/* EvalRst(inner class) for store evaluating result */
-	public static class EvalRst {
-		private double precision;
-		private double recall;
-		private double fMeasure;
-		
-		public EvalRst() {
-			this.precision = 0;
-			this.recall = 0;
-			this.fMeasure = 0;
-		}
-		public double getPrecision() {
-			return precision;
-		}
-		public double getRecall() {
-			return recall;
-		}
-		public double getfMeasure() {
-			return fMeasure;
-		}
-	}
-	
-	private EvalRst rst;
 	private Classifier classifier;
-	private int evalTimes;
-	private Evaluator(Classifier classifier) {
+	private Evaluation eval;
+	private Evaluator(Classifier classifier, Instances inss) throws Exception {
 		this.classifier = classifier;
-		this.rst = new EvalRst();
-		this.evalTimes = 0;
+		this.eval = new Evaluation(inss);
 	}
 	
 	/**
 	 * Factory method for new evaluator
 	 * @param classifier
 	 * @return
+	 * @throws Exception 
 	 */
-	public static Evaluator newEvaluator(Classifier classifier) {
-		return new Evaluator(classifier);
+	public static Evaluator newEvaluator(Classifier classifier, Instances inss) throws Exception {
+		return new Evaluator(classifier, inss);
 	}
 	
 	/**
@@ -57,16 +34,17 @@ public class Evaluator {
 	 * @param test
 	 * @throws Exception
 	 */
+	
 	public void eval(Instances train, Instances test) throws Exception{
-		Evaluation eval = new Evaluation(train);
 		eval.setPriors(train);
 		Classifier cls = Classifier.makeCopy(classifier);
 		cls.buildClassifier(train);
 		eval.evaluateModel(cls, test);
-		rst.precision += eval.weightedPrecision();
-		rst.recall += eval.weightedRecall();
-		rst.fMeasure += eval.weightedFMeasure();
-		evalTimes++;
+		// Í³¼Æconfusion matrix
+		if (Constant.debug_class_matrix) {
+			System.out.println(eval.toMatrixString());
+			System.out.println(eval.weightedFMeasure());
+		}
 	}
 	
 	public void eval4Instances(Instances train, Instances test, List<Integer> errorList) throws Exception {
@@ -81,12 +59,11 @@ public class Evaluator {
 		}
 	}
 	
-	
 	/**
 	 * print evaluating result
 	 * @return
 	 */
-	public String formatEvalRst() {
+	public String printEvalRst() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Utils.doubleToString(this.precision(), 7, 4)).append("\t") 
 				.append(Utils.doubleToString(this.recall(), 7, 4)).append("\t") 
@@ -94,18 +71,27 @@ public class Evaluator {
 		return sb.toString();
 	}
 	
+	/**
+	 * print confusion matrix for class details
+	 * @return
+	 * @throws Exception
+	 */
+	public String printConfusionMatrix() throws Exception {
+		return this.eval.toMatrixString();
+	}
+	
 	
 	// get average precision
 	private double precision() {
-		return this.rst.precision/this.evalTimes;
+		return this.eval.weightedPrecision();
 	}
 	// get average recall
 	private double recall() {
-		return this.rst.recall/this.evalTimes;
+		return this.eval.weightedRecall();
 	}
 	// get average f-measure
 	private double fMeasure() {
-		return this.rst.fMeasure/this.evalTimes;
+		return this.eval.weightedFMeasure();
 	}
 	
 }

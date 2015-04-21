@@ -14,7 +14,13 @@ public class PuPattern extends Pattern {
 	
 	// D(x)值
 	private double dx = 0;
+	private double nL1 = 0;
+	private double idf = 0;
 
+	
+	// pattern所属类别
+	private double fromClass = 0;
+	
 	
 	// increment操作
 	public void incrSuppD() {
@@ -70,6 +76,24 @@ public class PuPattern extends Pattern {
 	}
 	public void setCoveredU(int coveredU) {
 		this.coveredU = coveredU;
+	}
+	public double getnL1() {
+		return nL1;
+	}
+	public void setnL1(double nL1) {
+		this.nL1 = nL1;
+	}
+	public double getIdf() {
+		return idf;
+	}
+	public void setIdf(double idf) {
+		this.idf = idf;
+	}
+	public double getFromClass() {
+		return fromClass;
+	}
+	public void setFromClass(double fromClass) {
+		this.fromClass = fromClass;
 	}
 
 }

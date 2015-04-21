@@ -102,7 +102,7 @@ public class PatternLoader {
 			}
 			// global support
 			pattern.setSupport(Integer.parseInt(sp[1]));	
-			
+			pattern.setFromClass(c_x);
 			patList.add(pattern);
 		}
 		return patList;

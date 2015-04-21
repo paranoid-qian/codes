@@ -4,18 +4,23 @@ import java.util.Random;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "autos";	
+	public static final String DATASET = "vehicle";	
 	/* 随机种子 */
 	public static long s = System.currentTimeMillis();
-	//static { s = 1429167720368L;}
+	static { s = 1429593579568L;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
+	public static final boolean debug_fp_coverU = false;
+	public static final boolean debug_pattern_dx = false;		// 开启后输出过滤前的pattern和相应的dx
+	public static final boolean deubg_pattern_filterd = false;	// 开启后输出pu_pattern（过滤后）
+	public static final boolean debug_class_matrix = false;		// 开启后出输出class confusion matrix
 	
 	// 折数 
 	public static final int numFolds = 4;
+	public static final double trainRatio = 0.40;
 	// 挖CPF时：min_support
-	public static final int minSupport = 35;
-	public static final int puMinSupport = 50;
+	public static final double minSupport = 15;
+	public static final double puMinSupport = 12;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;
@@ -24,10 +29,9 @@ public class Constant {
 	public static final int itemMaxCount = 6;
 	public static final int puItemMaxCount = 6;
 	
-	// item coverage
-	public static final double item_coverage = 0.3;
 	// instance coverage
-	public static final double instance_coverage = 0.9;
+	public static final double instance_coverage = 1;
+	
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall
 	public static final int pu_delta = 1;		// U过滤时：pu_delta
@@ -37,8 +41,6 @@ public class Constant {
 	
 	public static final int coverage_delta = 1;	// 至少有coverage_delta次coverage，才算一个instance被coverage
 	
-	public static final boolean debug_pattern_dx = false;	// 开启后输出pattern和相应的dx
-	public static final boolean deubg_pattern_filterd = true;	// 开启后输出pattern（过滤后）
 	public static final boolean debug_item_coverage = false;	// 开启后输出item_coverage值
 	
 	

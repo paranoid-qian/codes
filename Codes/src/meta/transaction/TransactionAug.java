@@ -12,7 +12,6 @@ import weka.core.Instances;
 
 public class TransactionAug {
 	
-	
 	private static FastVector fv = new FastVector();
 	static {
 		fv.addElement(Constant.FIT);
