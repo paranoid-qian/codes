@@ -85,6 +85,40 @@ public class PuFilter {
 		return filteredPatterns;
 	}
 	
+	/**
+	 * V2. 计算instance实际被cover的个数，多个pattern cover同一个instance只算一次
+	 * @param test
+	 * @param inputPatterns
+	 * @param coverage
+	 * @return
+	 */
+	public static List<PuPattern> filterByInstanceCoverageV2(Instances test, List<PuPattern> inputPatterns, double coverage) {
+		List<PuPattern> filteredPatterns = new ArrayList<>();
+		double threshold = test.numInstances() * coverage;
+		int coveredInstances = 0;
+		Map<Integer, Integer> insCoverMap = new HashMap<>();
+		for (PuPattern pattern : inputPatterns) {
+			if ((double)coveredInstances >= threshold) {	// if satisfy, break
+				break;
+			}
+			for (int i = 0; i < test.numInstances(); i++) {
+				Instance ins = test.instance(i);
+				if (pattern.isFit(ins)) {
+					pattern.incrCoveredU();
+					if (!insCoverMap.containsKey(i)) {
+						coveredInstances++;
+						insCoverMap.put(i, 1);
+					}
+				}
+			}
+			filteredPatterns.add(pattern);
+		}
+				
+		
+		return filteredPatterns;
+	}
+	
+	
 	public static List<PuPattern> filterByItemCoverage(Instances inss, List<PuPattern> inputPatterns, double coverage) throws IOException {
 		List<Item> itemList = new ArrayList<>(ItemLoader.loadItemsByReverse(inss).values());	// 全局item
 		

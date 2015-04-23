@@ -1,6 +1,10 @@
 package meta.util.constants;
 
 import java.util.Random;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.bayes.NaiveBayes;
+
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
@@ -15,6 +19,8 @@ public class Constant {
 	public static final boolean deubg_pattern_filterd = false;	// 开启后输出pu_pattern（过滤后）
 	public static final boolean debug_class_matrix = false;		// 开启后出输出class confusion matrix
 	
+	
+	public static final Classifier classifier = new NaiveBayes();
 	// 折数 
 	public static final int numFolds = 4;
 	public static final double trainRatio = 0.40;

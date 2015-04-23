@@ -12,45 +12,36 @@ public class TrainTestGen {
 	 * @param numFold: 0-9
 	 * @return
 	 */
-	public static Instances genTrain(double trainRatio, Instances inss, int numFold) {
+	public static Instances[] genTrainTest(double trainRatio, Instances inss, int numFold) {
 		Instances train = null;
+		Instances test = null;
 		
 		if (trainRatio < 0.1 || trainRatio >=1) {
 			throw new IllegalArgumentException("Train ratio must be [0.1, 1).");
 		}
-		int numInstForFold = (int) (inss.numInstances() * trainRatio);
-		int offset = (int) (inss.numInstances() * 0.1);
+		
+		int numInstances = inss.numInstances();
+		int numInstForFold = (int) ( numInstances * trainRatio);
+		int offset = (int) (numInstances * 0.1);
+		
 		if (trainRatio == 0.1) {
 			train = inss.testCV(10, numFold);
-		} else {
-			int from = numFold * offset;
-			train = new Instances(inss, numInstForFold);
-			cpyInstances(from, train, numInstForFold, inss);
-		}
-		return train;
-	}
-	
-	public static Instances genTest(double trainRatio, Instances inss, int numFold) {
-		Instances test = null;
-		if (trainRatio < 0.1 || trainRatio >=1) {
-			throw new IllegalArgumentException("Train ratio must be [0.1, 1).");
-		}
-		int numInstForFold = (int) (inss.numInstances() * trainRatio);
-		int offset = (int) (inss.numInstances() * 0.1);
-		if (trainRatio == 0.1) {
 			test = inss.trainCV(10, numFold);
 		} else {
-			test = new Instances(inss, inss.numInstances() - numInstForFold);
+			train = new Instances(inss, numInstForFold);
+			test = new Instances(inss, numInstances - numInstForFold);
+			
 			int trainFrom = numFold * offset;
-			if (trainFrom + numInstForFold <= inss.numInstances()) {
+			cpyInstances(trainFrom, train, numInstForFold, inss);
+			if (trainFrom + numInstForFold <= numInstances) {
 				copyInstances(0, test, trainFrom, inss);
-				copyInstances(trainFrom+numInstForFold, test, inss.numInstances()-trainFrom-numInstForFold, inss);
+				copyInstances(trainFrom+numInstForFold, test, numInstances-trainFrom-numInstForFold, inss);
 			} else {
-				int from = (trainFrom+numInstForFold)%inss.numInstances();
-				copyInstances(from, test, inss.numInstances()-numInstForFold, inss);
+				int from = (trainFrom+numInstForFold) % numInstances;
+				copyInstances(from, test, numInstances-numInstForFold, inss);
 			}
 		}
-		return test;
+		return new Instances[]{train, test};
 	}
 	
 	private static void cpyInstances(int from, Instances dest, int num, Instances inss) {
