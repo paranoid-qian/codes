@@ -3,10 +3,6 @@ package meta.gen;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import meta.util.constants.Constant;
 import weka.core.Instances;
 import weka.core.Attribute;
