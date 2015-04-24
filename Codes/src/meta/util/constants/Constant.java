@@ -4,14 +4,17 @@ import java.util.Random;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
+import weka.core.converters.C45Loader;
+import wlsvm.WLSVM;
 
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "vehicle";	
+	public static final String DATASET = "anneal";	
 	/* 随机种子 */
 	public static long s = System.currentTimeMillis();
-	static { s = 1429593579568L;}
+	//static { s = 1429630248264L;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	public static final boolean debug_fp_coverU = false;
@@ -26,7 +29,7 @@ public class Constant {
 	public static final double trainRatio = 0.40;
 	// 挖CPF时：min_support
 	public static final double minSupport = 15;
-	public static final double puMinSupport = 12;
+	public static final double puMinSupport = 15;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;

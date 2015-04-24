@@ -49,7 +49,7 @@ public class EvalResource{
 		System.out.println("numFolds\t" + Constant.numFolds);
 		System.out.println("min_support\t" + Constant.minSupport);
 		System.out.println("puMin_support\t" + Constant.puMinSupport);
-		System.out.println("instance coverage\t" + Constant.instance_coverage);
+		System.out.println("ins_cover\t" + Constant.instance_coverage);
 	}
 	
 	// initiate
