@@ -10,6 +10,7 @@ import meta.entity.PuPattern;
 import meta.evaluator.Evaluator;
 import meta.filter.PuFilter;
 import meta.gen.PatternGen;
+import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
@@ -27,14 +28,13 @@ public class PuClassifier implements IClassifier {
 	@Override
 	public void evaluate() throws Exception {
 		Instances inss = new Instances(resource.getInstances());
-		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);
+		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);		// evaluator for PAT_PU
+		Evaluator eval4PatAll = Evaluator.newEvaluator(resource.getClassifier(), inss);	// evaluator for PAT_ALL
+		
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
-			Instances test = inss.trainCV(numFolds, fold);	// 90%
-			Instances train = inss.testCV(numFolds, fold); 	// 10%
-//			Instances[] trainTest = TrainTestGen.genTrainTest(trainRatio, inss, fold);
-//			Instances train = trainTest[0];
-//			Instances test = trainTest[1];
+			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
+			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
 			// map train instances to l_x
 			Map<Double, List<Instance>> map = mapInstancesByClass(train);
@@ -85,8 +85,34 @@ public class PuClassifier implements IClassifier {
 			
 			int numPatterns = patterns.size();
 			
+			
+			/*
+			 * 对比测度：pattern all，不经过filter过程 
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			System.out.println("Pat_ALL:" + numPatterns);
+			Instances augTrain = TransactionAug.augmentDatasetV2(patterns, train);
+			Instances augTest = TransactionAug.augmentDatasetV2(patterns, test);
+			eval4PatAll.evalV2(augTrain, augTest);
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
+			
 			// filter by instance coverage
 			patterns = PuFilter.filterByInstanceCoverageV2(test, patterns, Constant.instance_coverage);
+			System.out.println("Filtered: " + patterns.size() + "/" + numPatterns);
+			
+			
+			/*
+			 * 对比测度：single feature & fs
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
 			
 			if (Constant.deubg_pattern_filterd) {
 				System.out.println("pattern的总数：" + numPatterns);
@@ -100,8 +126,8 @@ public class PuClassifier implements IClassifier {
 			}
 			
 			// 增广instance
-			Instances augTrain = TransactionAug.augmentDataset(patterns, train);
-			Instances augTest = TransactionAug.augmentDataset(patterns, test);
+			augTrain = TransactionAug.augmentDatasetV2(patterns, train);
+			augTest = TransactionAug.augmentDatasetV2(patterns, test);
 			
 			// evaluate
 			eval.evalV2(augTrain, augTest);
@@ -111,6 +137,8 @@ public class PuClassifier implements IClassifier {
 		//System.out.println(eval.printConfusionMatrix());
 		System.out.println(eval.getAvgRstString());
 		System.out.println(eval.getMaxRstString());
+		
+		
 	}
 	
 	private Map<Double, List<Instance>> mapInstancesByClass(Instances train) {

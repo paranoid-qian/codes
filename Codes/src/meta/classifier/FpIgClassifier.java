@@ -5,6 +5,7 @@ import java.util.List;
 import meta.entity.Pattern;
 import meta.evaluator.Evaluator;
 import meta.filter.IgFilter;
+import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
@@ -24,10 +25,8 @@ public class FpIgClassifier implements IClassifier {
 		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
-			Instances test = inss.trainCV(numFolds, fold);	// 90%
-			Instances train = inss.testCV(numFolds, fold); 	// 10%
-			//Instances train = TrainTestGen.genTrain(trainRatio, inss, fold);
-			//Instances test = TrainTestGen.genTest(trainRatio, inss, fold);
+			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
+			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
 			// load train_x pattern（直接利用FP产生的pattern即可）
 			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);

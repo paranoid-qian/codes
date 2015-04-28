@@ -11,7 +11,7 @@ import wlsvm.WLSVM;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "anneal";	
+	public static final String DATASET = "segment";
 	/* Ëæ»úÖÖ×Ó */
 	public static long s = System.currentTimeMillis();
 	//static { s = 1429630248264L;}
@@ -106,5 +106,9 @@ public class Constant {
 	public static final String DOT = ".";
 	public static final String SP = "|";
 	public static final String ADD = "+";
+	public static final String EQUAL = "=";
+	public static final String AND = "&";
+	public static final String SPACE = " ";
+	public static final String NULL = "";
 	
 }

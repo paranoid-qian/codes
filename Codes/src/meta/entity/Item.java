@@ -1,5 +1,8 @@
 package meta.entity;
 
+import weka.core.Instance;
+import meta.util.constants.Constant;
+
 /**
  * attribute-value entry
  * @author paranoid
@@ -47,6 +50,18 @@ public class Item {
 		this.val = val;
 	}
 
+	@Override
+	public String toString() {
+		return this.attr + Constant.EQUAL + this.val;
+	}
 	
+	public String iValue(Instance ins) {
+		String v = ins.stringValue(id);
+		if (!v.equals(val)) {
+			return Constant.NO_FIT;
+		} else {
+			return Constant.FIT;
+		}
+	}
 	
 }

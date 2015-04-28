@@ -107,13 +107,13 @@ public class Pattern {
 	
 	// Resolve pattern attribute name
 	private void resolve() {
-		StringBuilder name = new StringBuilder("");
-		StringBuilder id = new StringBuilder("");
-		for (Item entry : itemsList) {
-			name.append(entry.getAttr() + "=" + entry.getVal() + "&");
-			id.append(entry.getId() + " ");
+		StringBuilder name = new StringBuilder();
+		StringBuilder id = new StringBuilder();
+		for (Item item : itemsList) {
+			name.append(item.toString() + Constant.AND);
+			id.append(item.getId() + Constant.SPACE);
 		}
-		name.replace(name.length()-1, name.length(), "");
+		name.replace(name.length()-1, name.length(), Constant.NULL);
 		this.pName = name.toString();
 		this.pId = id.toString();
 	}
