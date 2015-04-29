@@ -5,12 +5,18 @@ import java.util.List;
 import meta.entity.Pattern;
 import meta.evaluator.Evaluator;
 import meta.filter.IgFilter;
+import meta.gen.PatternGen;
 import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
 import weka.core.Instances;
 
+/**
+ * This classifier is for HongChen's method
+ * @author paranoid.Q
+ * @date Apr 29, 2015 2:04:52 PM
+ */
 public class FpIgClassifier implements IClassifier {
 
 	private EvalResource resource;
@@ -27,6 +33,9 @@ public class FpIgClassifier implements IClassifier {
 		for (int fold = 0; fold < numFolds; fold++) {
 			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
 			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
+			
+			// gen train_x pattern
+			PatternGen.genTrain_Foldx_FpPatterns(train, fold);
 			
 			// load train_x pattern（直接利用FP产生的pattern即可）
 			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);

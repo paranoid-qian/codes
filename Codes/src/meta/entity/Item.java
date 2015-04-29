@@ -56,6 +56,7 @@ public class Item {
 	}
 	
 	public String iValue(Instance ins) {
+		int id = AttributeIndexs.get(this.attr);
 		String v = ins.stringValue(id);
 		if (!v.equals(val)) {
 			return Constant.NO_FIT;

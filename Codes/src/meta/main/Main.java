@@ -11,7 +11,7 @@ public class Main {
 		EvalResource resource = EvalResource.initResource();
 		System.out.println("\n行1:naive, 行2:fp, 行3:fp-ig, 行4:pu");
 		System.out.println("\n  Prec\t Recall\t F-Meas");
-		System.out.println("----------------------------");
+		System.out.println("------------------------------------------");
 		
 		IClassifier cls1 = new NaiveClassifier(resource);
 		IClassifier cls2 = new PuClassifier(resource);
@@ -22,6 +22,6 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("----------------------------");
+		System.out.println("------------------------------------------");
 	}
 }

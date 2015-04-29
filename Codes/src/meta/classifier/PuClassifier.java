@@ -1,11 +1,16 @@
 package meta.classifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import meta.entity.Item;
+import meta.entity.Pattern;
 import meta.entity.PuPattern;
 import meta.evaluator.Evaluator;
 import meta.filter.PuFilter;
@@ -28,8 +33,11 @@ public class PuClassifier implements IClassifier {
 	@Override
 	public void evaluate() throws Exception {
 		Instances inss = new Instances(resource.getInstances());
-		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);		// evaluator for PAT_PU
-		Evaluator eval4PatAll = Evaluator.newEvaluator(resource.getClassifier(), inss);	// evaluator for PAT_ALL
+		
+		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);				// evaluator for PAT_PU
+		Evaluator eval4PatAll = Evaluator.newEvaluator(resource.getClassifier(), inss);			// evaluator for PAT_ALL
+		Evaluator eval4SingleFeatures = Evaluator.newEvaluator(resource.getClassifier(), inss);	// evaluator for single_features
+		
 		
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
@@ -90,7 +98,7 @@ public class PuClassifier implements IClassifier {
 			 * 对比测度：pattern all，不经过filter过程 
 			 *--------------------------------BEGIN------------------------------------ 
 			 */
-			System.out.println("Pat_ALL:" + numPatterns);
+			//System.out.println("Pat_ALL:" + numPatterns);
 			Instances augTrain = TransactionAug.augmentDatasetV2(patterns, train);
 			Instances augTest = TransactionAug.augmentDatasetV2(patterns, test);
 			eval4PatAll.evalV2(augTrain, augTest);
@@ -101,13 +109,17 @@ public class PuClassifier implements IClassifier {
 			
 			// filter by instance coverage
 			patterns = PuFilter.filterByInstanceCoverageV2(test, patterns, Constant.instance_coverage);
-			System.out.println("Filtered: " + patterns.size() + "/" + numPatterns);
+			//System.out.println("Filtered: " + patterns.size() + "/" + numPatterns);
 			
 			
 			/*
 			 * 对比测度：single feature & fs
 			 *--------------------------------BEGIN------------------------------------ 
 			 */
+			List<Item> singleItems = extractItems(patterns);
+			augTrain = TransactionAug.augmentDataset4SingleFeatures(singleItems, train);
+			augTest = TransactionAug.augmentDataset4SingleFeatures(singleItems, test);
+			eval4SingleFeatures.evalV2(augTrain, augTest);
 			
 			/*
 			 *---------------------------------END-------------------------------------
@@ -120,7 +132,6 @@ public class PuClassifier implements IClassifier {
 				// print patterns
 				System.out.println("fold-" + fold + ":");
 				for (PuPattern pattern : patterns) {
-					//System.out.println("fold-" + fold + ": " + pattern.pId() + " || D(x)=" + pattern.getDx() + " || coveredU=" + pattern.getCoveredU() + "/" + test.numInstances());
 					System.out.println(pattern.getFromClass() + "|" + pattern.pId() + "|" + pattern.getDx() + "|" + pattern.getSuppL1() + "|" + pattern.getIdf());
 				}
 			}
@@ -135,12 +146,30 @@ public class PuClassifier implements IClassifier {
 		}
 		//System.out.println(eval.printWeightedEvalRst());
 		//System.out.println(eval.printConfusionMatrix());
-		System.out.println(eval.getAvgRstString());
-		System.out.println(eval.getMaxRstString());
+		System.out.println("-------------------------------------------");
+		System.out.println("Pu patterns:");
+		System.out.println("avg" + eval.getAvgRstString());
+		System.out.println("max" + eval.getMaxRstString());
+		System.out.println("-------------------------------------------");
 		
+		System.out.println("-------------------------------------------");
+		System.out.println("Pu single features:");
+		System.out.println("avg" + eval4SingleFeatures.getAvgRstString());
+		System.out.println("max" + eval4SingleFeatures.getMaxRstString());
+		System.out.println("-------------------------------------------");
+		
+		System.out.println("-------------------------------------------");
+		System.out.println("Pu patterns all:");
+		System.out.println("avg" + eval4PatAll.getAvgRstString());
+		System.out.println("max" + eval4PatAll.getMaxRstString());
+		System.out.println("-------------------------------------------");
 		
 	}
 	
+	/*
+	 * map instances according to their class
+	 * @return map<classVal, List<Instance>>
+	 */
 	private Map<Double, List<Instance>> mapInstancesByClass(Instances train) {
 		Map<Double, List<Instance>> map = new HashMap<>();
 		for (int i = 0; i < train.numInstances(); i++) {
@@ -156,6 +185,9 @@ public class PuClassifier implements IClassifier {
 		return map;
 	}
 	
+	/*
+	 * calculate Dx value
+	 */
 	private void caluateDx(List<PuPattern> patterns4Fold4L_x, List<Instance> instanceListL_x, Instances inss) {
 		// suppD
 		for (int i = 0; i < inss.numInstances(); i++) {
@@ -182,6 +214,20 @@ public class PuClassifier implements IClassifier {
 			pattern.setDx(dx);
 			pattern.setIdf(Math.log(dSize/pattern.getSuppD()) / Math.log(2));
 		}
+	}
+	
+	/*
+	 * @param 经过pu过滤的pattern
+	 * @return 所有pattern的item（去重）
+	 */
+	private List<Item> extractItems(List<PuPattern> patterns) {
+		Map<Integer, Item> map = new HashMap<>();
+		for (Pattern pattern : patterns) {
+			for (Item item : pattern.entrys()) {
+				map.putIfAbsent(item.getId(), item);
+			}
+		}
+		return new ArrayList<>(map.values());
 	}
 	
 }

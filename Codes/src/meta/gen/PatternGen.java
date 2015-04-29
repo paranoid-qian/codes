@@ -59,7 +59,7 @@ public class PatternGen {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static void genTrain_XFpPatterns(Instances train, int fold) throws Exception {
+	public static void genTrain_Foldx_FpPatterns(Instances train, int fold) throws Exception {
 		
 		// 生成train_x上的transaction文件
 		TransactionGen.genFpTrainTransaction(train, fold);

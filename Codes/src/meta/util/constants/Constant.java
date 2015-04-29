@@ -11,10 +11,10 @@ import wlsvm.WLSVM;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "segment";
+	public static final String DATASET = "vowel";
 	/* Ëæ»úÖÖ×Ó */
 	public static long s = System.currentTimeMillis();
-	//static { s = 1429630248264L;}
+	static { s = 1429856364161L;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	public static final boolean debug_fp_coverU = false;

@@ -38,13 +38,13 @@ public class Evaluator {
 	 * @throws Exception
 	 */
 	
-	public void eval(Instances train, Instances test) throws Exception{
-		// evaluation for all folders
-		eval.setPriors(train);
-		Classifier cls = Classifier.makeCopy(classifier);
-		cls.buildClassifier(train);
-		eval.evaluateModel(cls, test);
-	}
+//	public void eval(Instances train, Instances test) throws Exception{
+//		// evaluation for all folders
+//		eval.setPriors(train);
+//		Classifier cls = Classifier.makeCopy(classifier);
+//		cls.buildClassifier(train);
+//		eval.evaluateModel(cls, test);
+//	}
 	
 	/**
 	 * evaluate for avg and max
