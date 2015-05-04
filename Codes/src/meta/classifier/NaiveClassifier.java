@@ -29,8 +29,8 @@ public class NaiveClassifier implements IClassifier {
 		}
 		System.out.println("------------------------------------------");
 		System.out.println("naive:");
-		System.out.println(eval.getAvgRstString());
-		System.out.println(eval.getMaxRstString());
+		System.out.println("avg\t" + eval.getAvgRstString());
+		System.out.println("max\t" + eval.getMaxRstString());
 		System.out.println("------------------------------------------");
 	}
 }

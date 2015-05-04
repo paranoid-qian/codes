@@ -145,20 +145,20 @@ public class PuClassifier implements IClassifier {
 		//System.out.println(eval.printConfusionMatrix());
 		System.out.println("-------------------------------------------");
 		System.out.println("Pu patterns:");
-		System.out.println("avg" + eval.getAvgRstString());
-		System.out.println("max" + eval.getMaxRstString());
+		System.out.println("avg\t" + eval.getAvgRstString());
+		System.out.println("max\t" + eval.getMaxRstString());
 		System.out.println("-------------------------------------------");
 		
 		System.out.println("-------------------------------------------");
 		System.out.println("Pu single features:");
-		System.out.println("avg" + eval4SingleFeatures.getAvgRstString());
-		System.out.println("max" + eval4SingleFeatures.getMaxRstString());
+		System.out.println("avg\t" + eval4SingleFeatures.getAvgRstString());
+		System.out.println("max\t" + eval4SingleFeatures.getMaxRstString());
 		System.out.println("-------------------------------------------");
 		
 		System.out.println("-------------------------------------------");
 		System.out.println("Pu patterns all:");
-		System.out.println("avg" + eval4PatAll.getAvgRstString());
-		System.out.println("max" + eval4PatAll.getMaxRstString());
+		System.out.println("avg\t" + eval4PatAll.getAvgRstString());
+		System.out.println("max\t" + eval4PatAll.getMaxRstString());
 		System.out.println("-------------------------------------------");
 		
 	}

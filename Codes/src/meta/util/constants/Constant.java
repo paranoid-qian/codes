@@ -41,10 +41,10 @@ public class Constant {
 	// instance coverage
 	public static final double instance_coverage = 1;
 	
+	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall
 	public static final int pu_delta = 1;		// U过滤时：pu_delta
-	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	
 	

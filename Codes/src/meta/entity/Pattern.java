@@ -1,7 +1,9 @@
 package meta.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import weka.core.Instance;
 import meta.util.constants.Constant;
@@ -16,8 +18,6 @@ public class Pattern {
 	
 	// pattern, 1 pat per line
 	private List<Item> itemsList;
-	// pattern information gain value, default 0.0
-	private double ig;
 	// global support value
 	private int support;
 	// pattern attribute and value 
@@ -26,6 +26,14 @@ public class Pattern {
 	private String pId;
 	
 	
+	/* 
+	 * For HongChen's method
+	 */
+	private double relevance;	// using pattern ig as the value
+	private double gain;		// pattern gain
+	
+	private Set<Instance> coveredSet;
+	
 	private int coveredU;
 	public void incrCoveredU() {
 		this.coveredU++;
@@ -33,9 +41,10 @@ public class Pattern {
 	
 	public Pattern() {
 		itemsList = new ArrayList<Item>();
-		this.ig = 0;
+		this.relevance = 0;
 		this.support = 0;
 		this.pName = null;
+		this.coveredSet = new HashSet<>();
 	}
 	
 	/**
@@ -89,12 +98,12 @@ public class Pattern {
 		return this.itemsList;
 	}
 	
-	public void setIg(double ig) {
-		this.ig = ig>0 ? ig : 0;
+	public void setRevelance(double revelance) {
+		this.relevance = revelance;
 	}
 	
-	public double getIg() {
-		return this.ig;
+	public double getRevelance() {
+		return this.relevance;
 	}
 	
 	public void setSupport(int support) {
@@ -124,6 +133,22 @@ public class Pattern {
 
 	public void setCoveredU(int coveredU) {
 		this.coveredU = coveredU;
+	}
+
+	public double getGain() {
+		return gain;
+	}
+
+	public void setGain(double gain) {
+		this.gain = gain;
+	}
+
+	public Set<Instance> getCoveredSet() {
+		return coveredSet;
+	}
+
+	public void setCoveredSet(Set<Instance> coveredSet) {
+		this.coveredSet = coveredSet;
 	}
 
 	

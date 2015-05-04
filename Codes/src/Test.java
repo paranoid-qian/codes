@@ -1,15 +1,11 @@
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.Random;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
-import meta.util.constants.Constant;
 import meta.util.loader.InstanceLoader;
 
 

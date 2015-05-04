@@ -1,6 +1,9 @@
 package meta.classifier;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import meta.entity.Pattern;
 import meta.evaluator.Evaluator;
@@ -10,6 +13,7 @@ import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -40,11 +44,19 @@ public class FpIgClassifier implements IClassifier {
 			// load train_x pattern（直接利用FP产生的pattern即可）
 			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);
 			
-			// sort patterns according to IG value
-			patterns = IgFilter.calculateAndSortByIg(train, patterns);
+			// initialization
+			IgFilter.calRelevance(train, patterns);
+			IgFilter.sortByGain(patterns);
+			System.out.println("=====");
+			for (Pattern pattern : patterns) {
+				System.out.println(pattern.pId() + "|" + pattern.getGain() + "|" + pattern.getRevelance());
+			}
+			System.out.println("=====");
 			
 			// 根据fpig_delta选择pattern
-			patterns  = IgFilter.filterByCoverage(train, patterns, Constant.fpig_delta);
+			System.out.println("***");
+			patterns  = filter(train, patterns, Constant.fpig_delta);
+			System.out.println("***");
 			
 			// 增广instance
 			Instances augTrain = TransactionAug.augmentDataset(patterns, train);
@@ -53,7 +65,47 @@ public class FpIgClassifier implements IClassifier {
 			// evaluate
 			eval.evalV2(augTrain, augTest);
 		}
-		//System.out.println(eval.printEvalRst());
+		System.out.println("-------------------------------------------");
+		System.out.println("PAT_FS patterns:");
+		System.out.println("avg\t" + eval.getAvgRstString());
+		System.out.println("max\t" + eval.getMaxRstString());
+		System.out.println("-------------------------------------------");
 		
+	}
+	
+	private List<Pattern> filter(Instances train, List<Pattern> list, int coverage_delta) {
+		List<Pattern> result = new ArrayList<>();
+		Set<Instance> coveredSet = new HashSet<>();
+		
+		int cover = 0;			// train中所有instance被cover的最少次数
+		int numSelected = 0;	// 已选择的pattern个数
+		
+		int numInstances = train.numInstances();
+		int numPatterns = list.size();
+		while(true) {
+			if (numSelected >= numPatterns) {
+				break;	// selected all patterns
+			}
+			if (cover >= coverage_delta) {
+				break;
+			}
+			Pattern selected = list.remove(list.size()-1);
+			System.out.println(selected.pId() + "|" + selected.getGain());
+			result.add(selected);
+			for (Pattern pattern : list) {
+				IgFilter.updateGain(pattern, selected, train);
+			}
+			IgFilter.sortByGain(list);
+			
+			numSelected++;
+			for (Instance instance : selected.getCoveredSet()) {
+				if (coveredSet.size() == numInstances) {
+					coveredSet.clear();
+					cover++;
+				}
+				coveredSet.add(instance);
+			}
+		}
+		return result;
 	}
 }

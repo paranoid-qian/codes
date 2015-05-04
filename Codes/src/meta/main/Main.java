@@ -1,6 +1,7 @@
 package meta.main;
 
 import meta.classifier.EvalResource;
+import meta.classifier.FpIgClassifier;
 import meta.classifier.IClassifier;
 import meta.classifier.NaiveClassifier;
 import meta.classifier.PuClassifier;
@@ -15,10 +16,12 @@ public class Main {
 		
 		IClassifier cls1 = new NaiveClassifier(resource);
 		IClassifier cls2 = new PuClassifier(resource);
+		IClassifier cls3 = new FpIgClassifier(resource);
 		
 		try {
 			cls1.evaluate();
 			cls2.evaluate();
+			cls3.evaluate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
