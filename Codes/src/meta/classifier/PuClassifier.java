@@ -48,10 +48,10 @@ public class PuClassifier implements IClassifier {
 			Map<String, PuPattern> union = new HashMap<>();
 			
 			for (Double classVal : map.keySet()) {
-				// get L_1 instances
+				// get L_x instances
 				List<Instance> instanceListL_x = map.get(classVal);
 				
-				// gen L_1 patterns
+				// gen L_x patterns
 				PatternGen.genPuPatterns4Fold4L_x(instanceListL_x, fold, classVal);
 				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, fold, classVal);
 				
@@ -144,23 +144,20 @@ public class PuClassifier implements IClassifier {
 		//System.out.println(eval.printWeightedEvalRst());
 		//System.out.println(eval.printConfusionMatrix());
 		System.out.println("-------------------------------------------");
-		System.out.println("Pu patterns:");
-		System.out.println("avg\t" + eval.getAvgRstString());
-		System.out.println("max\t" + eval.getMaxRstString());
-		System.out.println("-------------------------------------------");
-		
-		System.out.println("-------------------------------------------");
 		System.out.println("Pu single features:");
 		System.out.println("avg\t" + eval4SingleFeatures.getAvgRstString());
 		System.out.println("max\t" + eval4SingleFeatures.getMaxRstString());
 		System.out.println("-------------------------------------------");
-		
 		System.out.println("-------------------------------------------");
 		System.out.println("Pu patterns all:");
 		System.out.println("avg\t" + eval4PatAll.getAvgRstString());
 		System.out.println("max\t" + eval4PatAll.getMaxRstString());
 		System.out.println("-------------------------------------------");
-		
+		System.out.println("-------------------------------------------");
+		System.out.println("Pu patterns:");
+		System.out.println("avg\t" + eval.getAvgRstString());
+		System.out.println("max\t" + eval.getMaxRstString());
+		System.out.println("-------------------------------------------");
 	}
 	
 	/*

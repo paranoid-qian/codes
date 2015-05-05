@@ -118,6 +118,8 @@ public class IgFilter {
 			}
 		}
 		double count_c0 = total - count_c1;
+		// count_c1或count_c0为0时，导致log求值为NaN，因此这里需要分别处理
+		// 舍弃为0的项
 		if (count_c0 != 0 && count_c1 != 0) {
 			return ( -count_c1/total*Math.log(count_c1/total)/Math.log(2) - count_c0/total*Math.log(count_c0/total)/Math.log(2) );
 		} else if (count_c0 == 0) {
