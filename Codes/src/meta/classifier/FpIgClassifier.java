@@ -47,16 +47,16 @@ public class FpIgClassifier implements IClassifier {
 			// initialization
 			IgFilter.calRelevance(train, patterns);
 			IgFilter.sortByGain(patterns);
-			System.out.println("=====");
-			for (Pattern pattern : patterns) {
-				System.out.println(pattern.pId() + "|" + pattern.getGain() + "|" + pattern.getRevelance());
-			}
-			System.out.println("=====");
+//			System.out.println("=====");
+//			for (Pattern pattern : patterns) {
+//				System.out.println(pattern.pId() + "|" + pattern.getGain() + "|" + pattern.getRevelance());
+//			}
+//			System.out.println("=====");
 			
 			// 根据fpig_delta选择pattern
-			System.out.println("***");
+			//System.out.println("***");
 			patterns  = filter(train, patterns, Constant.fpig_delta);
-			System.out.println("***");
+			//System.out.println("***");
 			
 			// 增广instance
 			Instances augTrain = TransactionAug.augmentDataset(patterns, train);
@@ -84,13 +84,14 @@ public class FpIgClassifier implements IClassifier {
 		int numPatterns = list.size();
 		while(true) {
 			if (numSelected >= numPatterns) {
+				//System.out.println("selected all");
 				break;	// selected all patterns
 			}
 			if (cover >= coverage_delta) {
 				break;
 			}
 			Pattern selected = list.remove(list.size()-1);
-			System.out.println(selected.pId() + "|" + selected.getGain());
+			//System.out.println(selected.pId() + "|" + selected.getGain());
 			result.add(selected);
 			for (Pattern pattern : list) {
 				IgFilter.updateGain(pattern, selected, train);

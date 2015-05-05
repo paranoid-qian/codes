@@ -70,7 +70,7 @@ public class PatternGen {
 		String src = Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		String dest = Constant.FP_TRAIN_PATTERN_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		
-		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tm -m"+ Constant.itemMinCount + " -s"+ Constant.minSupport +"  -v\"|%a\" "
+		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tc -m"+ Constant.itemMinCount + " -s"+ Constant.minSupport +"  -v\"|%a\" "
 				+ src + " "
 				+ dest ;
 		 try {

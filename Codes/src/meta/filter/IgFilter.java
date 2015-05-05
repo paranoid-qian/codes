@@ -64,6 +64,7 @@ public class IgFilter {
 				* Math.min(selected.getRevelance(), pattern.getRevelance());
 		if (gain < pattern.getGain()) {
 			pattern.setGain(gain);
+			System.out.println("updated: " + pattern.pId());
 			return true;
 		}
 		return false;
@@ -101,7 +102,9 @@ public class IgFilter {
 			}
 		}
 		pattern.setCoveredSet(new HashSet<>(fitInstances));
-		
+		if (pattern.pId().equals("30 112 ")) {
+			System.out.println("--");
+		}
 		double total = train.numInstances();
 		double count_c1 = fitInstances.size();
 		double count_c0 = nofitInstances.size();
