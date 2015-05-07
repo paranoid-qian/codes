@@ -45,7 +45,7 @@ public class EvalResource{
 	private EvalResource() {
 		init();	
 		// Êä³ö²ÎÊý
-		System.out.println("random\t" + Constant.s);
+		System.out.println("random\t" + Constant.s + "L");
 		System.out.println("numFolds\t" + Constant.numFolds);
 		System.out.println("min_support\t" + Constant.minSupport);
 		System.out.println("puMin_support\t" + Constant.puMinSupport);

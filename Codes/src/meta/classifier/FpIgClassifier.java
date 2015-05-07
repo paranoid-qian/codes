@@ -1,8 +1,10 @@
 package meta.classifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import meta.entity.Pattern;
@@ -66,7 +68,7 @@ public class FpIgClassifier implements IClassifier {
 			eval.evalV2(augTrain, augTest);
 		}
 		System.out.println("-------------------------------------------");
-		System.out.println("PAT_FS patterns:");
+		System.out.println("fp fs patterns:");
 		System.out.println("avg\t" + eval.getAvgRstString());
 		System.out.println("max\t" + eval.getMaxRstString());
 		System.out.println("-------------------------------------------");
@@ -109,4 +111,5 @@ public class FpIgClassifier implements IClassifier {
 		}
 		return result;
 	}
+	
 }

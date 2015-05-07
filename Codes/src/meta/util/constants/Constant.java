@@ -11,10 +11,10 @@ import wlsvm.WLSVM;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "satimage";
+	public static final String DATASET = "diabetes";
 	/* 随机种子 */
 	public static long s = System.currentTimeMillis();
-	//static { s = 1429842523270L;}
+	//static { s = 1430982501325L;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	public static final boolean debug_fp_coverU = false;
@@ -22,14 +22,13 @@ public class Constant {
 	public static final boolean deubg_pattern_filterd = false;	// 开启后输出pu_pattern（过滤后）
 	public static final boolean debug_class_matrix = false;		// 开启后出输出class confusion matrix
 	
-	
 	public static final Classifier classifier = new NaiveBayes();
 	// 折数 
 	public static final int numFolds = 4;
 	public static final double trainRatio = 0.40;
 	// 挖CPF时：min_support
-	public static final double minSupport = 25;
-	public static final double puMinSupport = 25;
+	public static final double minSupport = 15;
+	public static final double puMinSupport = 15;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;
@@ -39,8 +38,7 @@ public class Constant {
 	public static final int puItemMaxCount = 6;
 	
 	// instance coverage
-	public static final double instance_coverage = 1;
-	
+	public static final double instance_coverage = 0.8;
 	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall

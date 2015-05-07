@@ -1,9 +1,12 @@
 package meta.filter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import weka.core.Instance;
@@ -54,17 +57,18 @@ public class IgFilter {
 		
 		int p1 = covered1.size();
 		int p2 = covered2.size();
-		covered1.retainAll(covered2);
+		covered1.retainAll(covered2);	// 没有覆盖equals方法！
 		int p12 = covered1.size();
-		if (p1 + p2 - p12 == 0) {
-			System.out.println(pattern.pId());
-			System.out.println(selected.pId());
-		}
-		double gain = pattern.getRevelance() - p12 / (p1 + p2 - p12) 
+//		if (p12 != 0) {
+//			System.out.println(pattern.pId());
+//			System.out.println(selected.pId());
+//		}
+		double r = ((double)p12) / (p1 + p2 - p12) 
 				* Math.min(selected.getRevelance(), pattern.getRevelance());
+		double gain = pattern.getRevelance() - r;
 		if (gain < pattern.getGain()) {
 			pattern.setGain(gain);
-			System.out.println("updated: " + pattern.pId());
+			//System.out.println("updated: " + pattern.pId());
 			return true;
 		}
 		return false;
@@ -72,25 +76,19 @@ public class IgFilter {
 	
 	private static double infoOfTrain(Instances train) {
 		double total = train.numInstances();
-		double count_c1 = 0;
-		for (int i = 0; i < total; i++) {
-			Instance ins = train.instance(i);
-			if (ins.classValue() == 0.0) {
-				count_c1++;
+		Map<Double, List<Instance>> map = mapInstancesByClass(train);
+		double result = 0;
+		for (List<Instance> list : map.values()) {
+			int count_c_x = list.size();
+			if (count_c_x != 0) {
+				result += (-count_c_x/total*Math.log(count_c_x/total)/Math.log(2));
 			}
 		}
-		double count_c0 = total - count_c1;
-		if (count_c0 != 0 && count_c1 != 0) {
-			return ( -count_c1/total*Math.log(count_c1/total)/Math.log(2) - count_c0/total*Math.log(count_c0/total)/Math.log(2) );
-		} else if (count_c0 == 0) {
-			return ( -count_c1/total*Math.log(count_c1/total)/Math.log(2) );
-		} else {
-			return ( -count_c0/total*Math.log(count_c0/total)/Math.log(2));
-		}
+		return result;
 	}
 		
 	private static double infoOfPattern(Instances train, Pattern pattern) {
-		// 区分C-1和C-0两类的instances
+		// 划分fit和no-fit两个分区, 因为对pattern而言，只有两个分区
 		Set<Instance> fitInstances = new HashSet<Instance>();
 		Set<Instance> nofitInstances = new HashSet<Instance>();
 		for (int i = 0; i < train.numInstances(); i++) {
@@ -102,33 +100,63 @@ public class IgFilter {
 			}
 		}
 		pattern.setCoveredSet(new HashSet<>(fitInstances));
-		if (pattern.pId().equals("30 112 ")) {
-			System.out.println("--");
-		}
 		double total = train.numInstances();
-		double count_c1 = fitInstances.size();
-		double count_c0 = nofitInstances.size();
+		double count_D1 = fitInstances.size();
+		double count_D0 = nofitInstances.size();
 		
-		return count_c1/total*infoOfPartialTrain(fitInstances) + count_c0/total*infoOfPartialTrain(nofitInstances);
+		return count_D1/total*infoOfPartialTrain(fitInstances) + count_D0/total*infoOfPartialTrain(nofitInstances);
 	}
 	
-	private static double infoOfPartialTrain(Set<Instance> partrialInstances) {
-		double total = partrialInstances.size();
-		double count_c1 = 0;
-		for (Instance ins : partrialInstances) {
-			if (ins.classValue() == 0.0) {
-				count_c1++;
+	private static double infoOfPartialTrain(Set<Instance> partialInstances) {
+		double total = partialInstances.size();
+		Map<Double, List<Instance>> map = mapInstancesByClass(partialInstances);
+		
+		// count_c_x=0时，导致log求值为NaN，因此这里需要去掉count_c_x为0的情形
+		// 舍弃为0的项
+		double result = 0;
+		for (List<Instance> list : map.values()) {
+			int count_c_x = list.size();
+			if (count_c_x != 0) {
+				result += -count_c_x/total*Math.log(count_c_x/total)/Math.log(2);
 			}
 		}
-		double count_c0 = total - count_c1;
-		// count_c1或count_c0为0时，导致log求值为NaN，因此这里需要分别处理
-		// 舍弃为0的项
-		if (count_c0 != 0 && count_c1 != 0) {
-			return ( -count_c1/total*Math.log(count_c1/total)/Math.log(2) - count_c0/total*Math.log(count_c0/total)/Math.log(2) );
-		} else if (count_c0 == 0) {
-			return ( -count_c1/total*Math.log(count_c1/total)/Math.log(2) );
-		} else {
-			return ( -count_c0/total*Math.log(count_c0/total)/Math.log(2));
+		return result;
+	}
+	
+	
+	/*
+	 * map instances according to their class
+	 * @return map<classVal, List<Instance>>
+	 */
+	private static Map<Double, List<Instance>> mapInstancesByClass(Instances train) {
+		Map<Double, List<Instance>> map = new HashMap<>();
+		for (int i = 0; i < train.numInstances(); i++) {
+			Instance ins = train.instance(i);
+			if (map.containsKey(ins.classValue())) {
+				map.get(ins.classValue()).add(ins);
+			} else {
+				List<Instance> l_x = new ArrayList<>();
+				l_x.add(ins);
+				map.put(ins.classValue(), l_x);
+			}
 		}
+		return map;
+	}
+	/*
+	 * map instances according to their class
+	 * @return map<classVal, List<Instance>>
+	 */
+	private static Map<Double, List<Instance>> mapInstancesByClass(Set<Instance> instances) {
+		Map<Double, List<Instance>> map = new HashMap<>();
+		for (Instance ins : instances) {
+			if (map.containsKey(ins.classValue())) {
+				map.get(ins.classValue()).add(ins);
+			} else {
+				List<Instance> l_x = new ArrayList<>();
+				l_x.add(ins);
+				map.put(ins.classValue(), l_x);
+			}
+		}
+		return map;
 	}
 }
