@@ -15,8 +15,8 @@ public class Main {
 		System.out.println("------------------------------------------");
 		
 		IClassifier cls1 = new NaiveClassifier(resource);
-		IClassifier cls2 = new PuClassifier(resource);
-		IClassifier cls3 = new FpIgClassifier(resource);
+		IClassifier cls2 = new FpIgClassifier(resource);
+		IClassifier cls3 = new PuClassifier(resource);
 		
 		try {
 			cls1.evaluate();

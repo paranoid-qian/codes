@@ -4,6 +4,7 @@ import java.util.Random;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.LibSVM;
 import weka.classifiers.trees.J48;
 import weka.core.converters.C45Loader;
 import wlsvm.WLSVM;
@@ -11,10 +12,12 @@ import wlsvm.WLSVM;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "satimage";
+	public static final String DATASET = "diabetes";
 	/* 随机种子 */
 	public static long s = System.currentTimeMillis();
-	//static { s = 1429842523270L;}
+	static { s = 1434002341591L
+
+;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
 	public static final boolean debug_fp_coverU = false;
@@ -23,24 +26,35 @@ public class Constant {
 	public static final boolean debug_class_matrix = false;		// 开启后出输出class confusion matrix
 	
 	
+	// for one-class pattern analysis (ig)
+	public static final boolean debug_fp_ig = false;						/* 开启后输出全训练集下的pattern和全局ig */
+	public static final boolean debug_fp_afterFiltered = false;
+	public static final boolean debug_one_class_ig = false; 				/* 开启后输出one-class下的pattern和全局ig */
+	public static final boolean debug_one_class_ig_afterFilter = false; 		/* 开启后输出过滤后的pattern和全局ig */
+	
+	// for one-class pattern analysis (chi-square)
+	public static final boolean debug_fp_chi = false;
+	public static final boolean debug_fp_chi_afterFiltered = false;
+	public static final boolean debug_one_class_chi = false;
+	public static final boolean debug_one_class_chi_afterFilter = true;
+	
+	// 取第几折
+	public static final int debug_fold = 1;
+	
 	public static final Classifier classifier = new NaiveBayes();
 	// 折数 
 	public static final int numFolds = 4;
-	public static final double trainRatio = 0.40;
+	public static final double trainRatio = 0.30;
 	// 挖CPF时：min_support
-	public static final double minSupport = 25;
-	public static final double puMinSupport = 25;
+	public static final double minSupport = 15;
+	public static final double puMinSupport = 20;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;
 	public static final int puItemMinCount = 2;
 
-	public static final int itemMaxCount = 6;
-	public static final int puItemMaxCount = 6;
-	
 	// instance coverage
-	public static final double instance_coverage = 1;
-	
+	public static final double instance_coverage =  0.7;
 	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall
@@ -63,7 +77,7 @@ public class Constant {
 	public static final boolean debug_pu_pattern = false;		/* 开启后输出具体的pu方法的每折pattern */
 	public static final boolean debug_origin_summary = false;	/* 开启后输出eval的summary */
 	public static final boolean debug_cmd_pu = false;			/* 开启后输出挖掘CFP时的cmd命令 */
-	public static final boolean debug_fp_ig = false;			/* 开启后输出具体的fp-ig方法的每折pattern */
+	
 	
 	/* pu trans and pattern */
 	public static final String PU_TRAIN_LX_TRANSACTION_FOLDER = TOP_FOLDER + DATASET +"\\pu\\fold_";
@@ -112,3 +126,4 @@ public class Constant {
 	public static final String NULL = "";
 	
 }
+

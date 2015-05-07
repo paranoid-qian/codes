@@ -56,9 +56,6 @@ public class PatternLoader {
 				}
 				pattern.addEntry(reverseMap.get(Integer.parseInt(idStr)));	
 			}
-			// global support
-			pattern.setSupport(Integer.parseInt(sp[1]));	
-			
 			patList.add(pattern);
 		}
 		return patList;
@@ -101,7 +98,6 @@ public class PatternLoader {
 				pattern.addEntry(reverseMap.get(Integer.parseInt(idStr)));	
 			}
 			// global support
-			pattern.setSupport(Integer.parseInt(sp[1]));	
 			pattern.setFromClass(c_x);
 			patList.add(pattern);
 		}

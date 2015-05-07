@@ -20,6 +20,7 @@ public class PatternGen {
 	 * @throws Exception 
 	 */
 	public static void genPuPatterns4Fold4L_x(List<Instance> trainC_fit, int fold, double c_x) throws Exception {
+		System.out.println(trainC_fit.size());
 		
 		TransactionGen.genL_X_PuTransactionFile(trainC_fit, fold, c_x);
 		File transFile = null;
@@ -70,7 +71,7 @@ public class PatternGen {
 		String src = Constant.FP_TRAIN_TRANSACTION_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		String dest = Constant.FP_TRAIN_PATTERN_FOLDER + Constant.FOLD_PATH + fold + Constant.TYPE_POSTFIX;
 		
-		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tc -m"+ Constant.itemMinCount + " -s"+ Constant.minSupport +"  -v\"|%a\" "
+		String cmd = "E:\\weka\\dataset\\fpgrowth_origin.exe -x  -tm -m"+ Constant.itemMinCount + " -s"+ Constant.minSupport +"  -v\"|%a\" "
 				+ src + " "
 				+ dest ;
 		 try {

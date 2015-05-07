@@ -22,6 +22,9 @@ public class NaiveClassifier implements IClassifier {
 		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
+//			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
+//			Instances train = tt[0];
+//			Instances test = tt[1];
 			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
 			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			

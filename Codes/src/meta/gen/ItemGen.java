@@ -3,6 +3,10 @@ package meta.gen;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+
 import meta.util.constants.Constant;
 import weka.core.Instances;
 import weka.core.Attribute;
@@ -28,7 +32,8 @@ public class ItemGen {
 	 * @return item count
 	 * @throws Exception
 	 */
-	public static int genItems(Instances inss) throws Exception {
+	@Nullable
+	public static int genItems(@NotNull Instances inss) throws Exception {
 		// ±È¿˙À˘”–attributes
 		int numAttributes = inss.numAttributes();
 		for (int i = 0; i < numAttributes; i++) {

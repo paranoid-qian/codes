@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
+import com.sun.istack.internal.Nullable;
 
 import meta.entity.Item;
 import meta.entity.Pattern;
@@ -14,6 +17,8 @@ import meta.filter.PuFilter;
 import meta.gen.PatternGen;
 import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
+import meta.util.ChiSquareCalculator;
+import meta.util.IgCalculator;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
 import weka.core.Instance;
@@ -23,10 +28,9 @@ public class PuClassifier implements IClassifier {
 	
 	private EvalResource resource;
 	
-	public PuClassifier(EvalResource resource) {
+	public PuClassifier( EvalResource resource) {
 		this.resource = resource;
 	}
-	
 	@Override
 	public void evaluate() throws Exception {
 		Instances inss = new Instances(resource.getInstances());
@@ -37,7 +41,16 @@ public class PuClassifier implements IClassifier {
 		
 		
 		int numFolds = resource.getNumFolds();
+		// 全局pattern
+		Map<Double, List<Instance>> inssMap = mapInstancesByClass(inss);
+		for (Double classVal : inssMap.keySet()) {
+			PatternGen.genPuPatterns4Fold4L_x(inssMap.get(classVal), -1, classVal);
+		}
+		
 		for (int fold = 0; fold < numFolds; fold++) {
+//			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
+//			Instances train = tt[0];
+//			Instances test = tt[1];
 			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
 			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
@@ -51,9 +64,11 @@ public class PuClassifier implements IClassifier {
 				// get L_x instances
 				List<Instance> instanceListL_x = map.get(classVal);
 				
-				// gen L_x patterns
-				PatternGen.genPuPatterns4Fold4L_x(instanceListL_x, fold, classVal);
-				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, fold, classVal);
+//				// gen L_x patterns
+//				PatternGen.genPuPatterns4Fold4L_x(instanceListL_x, fold, classVal);
+//				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, fold, classVal);
+				// load 全局pattern
+				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, -1, classVal);
 				
 				// calculate D(x)
 				caluateDx(patterns4Fold4L_x, instanceListL_x, inss);
@@ -66,18 +81,57 @@ public class PuClassifier implements IClassifier {
 				}
 			}
 			
-			// sort by D(x) value
 			List<PuPattern> patterns = new ArrayList<>(union.values());
+			
+			
+			 
+			/*
+			 * 因素分析：打印IG和卡方
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			if (Constant.debug_one_class_ig) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+					IgCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getIg());
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			if (Constant.debug_one_class_chi) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+//					ChiSquareCalculator.cal(inss, patterns);
+//					for (Pattern pattern : patterns) {
+//						System.out.println(pattern.getChi());
+//					}
+					ChiSquareCalculator.cal4PerClass(inss, patterns);
+					for (PuPattern pattern : patterns) {
+//						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
+//						for (Double chi : chi4PerClass.values()) {
+//							System.out.print(chi + "\t");
+//						}
+						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
+						for (Integer supp : supp4PerClass.values()) {
+							System.out.print(supp + "\t");
+						}
+						System.out.println();
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
+			
+			// sort by D(x) value
+			
 			patterns.sort(new Comparator<PuPattern>() {
 				@Override // 从高到低排序
 				public int compare(PuPattern p1, PuPattern p2) {
-					if (p1.getDx() > p2.getDx()) { 
-						return -1;
-					} else if (p1.getDx() < p2.getDx()) {
-						return 1;
-					} else {
-						return 0;
-					}
+					return Double.compare(p2.getDx(), p1.getDx());
 				}
 			});
 			
@@ -102,6 +156,7 @@ public class PuClassifier implements IClassifier {
 			/*
 			 *---------------------------------END-------------------------------------
 			 */
+			
 			
 			
 			// filter by instance coverage
@@ -139,6 +194,50 @@ public class PuClassifier implements IClassifier {
 			
 			// evaluate
 			eval.evalV2(augTrain, augTest);
+			
+			
+			 
+			/*
+			 * 因素分析：打印IG和卡方(全局)
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			if (Constant.debug_one_class_ig_afterFilter) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+					IgCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getIg());
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			if (Constant.debug_one_class_chi_afterFilter) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+//					ChiSquareCalculator.cal(inss, patterns);
+//					for (Pattern pattern : patterns) {
+//						System.out.println(pattern.getChi());
+//					}
+					ChiSquareCalculator.cal4PerClass(inss, patterns);
+					for (PuPattern pattern : patterns) {
+//						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
+//						for (Double chi : chi4PerClass.values()) {
+//							System.out.print(chi + "\t");
+//						}
+						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
+						for (Integer supp : supp4PerClass.values()) {
+							System.out.print(supp + "\t");
+						}
+						System.out.println();
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
+			
 			
 		}
 		//System.out.println(eval.printWeightedEvalRst());

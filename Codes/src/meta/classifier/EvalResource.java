@@ -16,6 +16,7 @@ public class EvalResource{
 	private Instances data;
 	private int numFolds = Constant.numFolds;
 	private int numItems;
+	private double trainRatio = Constant.trainRatio;
 	//private double trainRatio = Constant.trainRatio;
 	
 	
@@ -45,7 +46,7 @@ public class EvalResource{
 	private EvalResource() {
 		init();	
 		// Êä³ö²ÎÊý
-		System.out.println("random\t" + Constant.s);
+		System.out.println("random\t" + Constant.s + "L");
 		System.out.println("numFolds\t" + Constant.numFolds);
 		System.out.println("min_support\t" + Constant.minSupport);
 		System.out.println("puMin_support\t" + Constant.puMinSupport);
@@ -96,6 +97,12 @@ public class EvalResource{
 		if (!file.exists() && !file.isDirectory()) {
 			file.mkdirs();
 		}
+	}
+	public double getTrainRatio() {
+		return trainRatio;
+	}
+	public void setTrainRatio(double trainRatio) {
+		this.trainRatio = trainRatio;
 	}
 	
 

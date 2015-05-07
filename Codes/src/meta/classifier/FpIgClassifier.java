@@ -1,16 +1,22 @@
 package meta.classifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import meta.entity.Pattern;
+import meta.entity.PuPattern;
 import meta.evaluator.Evaluator;
 import meta.filter.IgFilter;
 import meta.gen.PatternGen;
 import meta.gen.TrainTestGen;
 import meta.transaction.TransactionAug;
+import meta.util.ChiSquareCalculator;
+import meta.util.IgCalculator;
 import meta.util.constants.Constant;
 import meta.util.loader.PatternLoader;
 import weka.core.Instance;
@@ -35,14 +41,61 @@ public class FpIgClassifier implements IClassifier {
 		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
+//			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
+//			Instances train = tt[0];
+//			Instances test = tt[1];
+			
 			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
 			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
 			// gen train_x pattern
-			PatternGen.genTrain_Foldx_FpPatterns(train, fold);
+			PatternGen.genTrain_Foldx_FpPatterns(inss, fold);
 			
 			// load train_x pattern（直接利用FP产生的pattern即可）
 			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);
+			
+			
+			/*
+			 * 因素分析：打印IG和卡方(全局IG)
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			if (Constant.debug_fp_ig) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+					IgCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getIg());
+					}
+					
+					System.out.println("--------------------------");
+				}
+			}
+			if (Constant.debug_fp_chi) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+//					ChiSquareCalculator.cal(inss, patterns);
+//					for (Pattern pattern : patterns) {
+//						System.out.println(pattern.getChi());
+//					}
+					ChiSquareCalculator.cal4PerClass(inss, patterns);
+					for (Pattern pattern : patterns) {
+//						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
+//						for (Double chi : chi4PerClass.values()) {
+//							System.out.print(chi + "\t");
+//						}
+						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
+						for (Integer supp : supp4PerClass.values()) {
+							System.out.print(supp + "\t");
+						}
+						System.out.println();
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
 			
 			// initialization
 			IgFilter.calRelevance(train, patterns);
@@ -64,9 +117,38 @@ public class FpIgClassifier implements IClassifier {
 			
 			// evaluate
 			eval.evalV2(augTrain, augTest);
+			
+			/*
+			 * 因素分析：打印IG和卡方(全局IG)
+			 *--------------------------------BEGIN------------------------------------ 
+			 */
+			if (Constant.debug_fp_afterFiltered) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+					IgCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getIg());
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			if (Constant.debug_fp_chi_afterFiltered) {
+				if (fold == Constant.debug_fold) {
+					System.out.println("--------------------------");
+					ChiSquareCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getChi());
+					}
+					System.out.println("--------------------------");
+				}
+			}
+			/*
+			 *---------------------------------END-------------------------------------
+			 */
+			
 		}
 		System.out.println("-------------------------------------------");
-		System.out.println("PAT_FS patterns:");
+		System.out.println("fp fs patterns:");
 		System.out.println("avg\t" + eval.getAvgRstString());
 		System.out.println("max\t" + eval.getMaxRstString());
 		System.out.println("-------------------------------------------");
@@ -109,4 +191,5 @@ public class FpIgClassifier implements IClassifier {
 		}
 		return result;
 	}
+	
 }

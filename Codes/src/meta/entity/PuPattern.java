@@ -1,5 +1,8 @@
 package meta.entity;
 
+import java.util.Comparator;
+import java.util.TreeMap;
+
 
 public class PuPattern extends Pattern {
 	
@@ -16,7 +19,12 @@ public class PuPattern extends Pattern {
 	private double dx = 0;
 	private double nL1 = 0;
 	private double idf = 0;
-
+	
+	
+	// one-class验证
+	public double clsFitCount = 0;
+	public double otherClsFitCount = 0;
+	
 	
 	// pattern所属类别
 	private double fromClass = 0;

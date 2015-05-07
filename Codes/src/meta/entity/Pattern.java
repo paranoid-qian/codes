@@ -1,9 +1,11 @@
 package meta.entity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 
 import weka.core.Instance;
 import meta.util.constants.Constant;
@@ -18,8 +20,6 @@ public class Pattern {
 	
 	// pattern, 1 pat per line
 	private List<Item> itemsList;
-	// global support value
-	private int support;
 	// pattern attribute and value 
 	private String pName;
 	// item ids
@@ -32,6 +32,30 @@ public class Pattern {
 	private double relevance;	// using pattern ig as the value
 	private double gain;		// pattern gain
 	
+	
+	// for one-class analysis, can not be changed
+	private double ig;
+	private double chi;
+	
+	// global support value
+	private int gSupport;
+	
+	//public double chi_one_class;
+	public TreeMap<Double, Double> chi4PerClass = new TreeMap<>(new Comparator<Double>() {
+		@Override
+		public int compare(Double o1, Double o2) {
+			return Double.compare(o1, o2);
+		}
+	});
+	
+	// per class support
+	public TreeMap<Double, Integer> supp4PerClass = new TreeMap<>(new Comparator<Double>() {
+		@Override
+		public int compare(Double o1, Double o2) {
+			return Double.compare(o1, o2);
+		}
+	});
+	
 	private Set<Instance> coveredSet;
 	
 	private int coveredU;
@@ -42,7 +66,6 @@ public class Pattern {
 	public Pattern() {
 		itemsList = new ArrayList<Item>();
 		this.relevance = 0;
-		this.support = 0;
 		this.pName = null;
 		this.coveredSet = new HashSet<>();
 	}
@@ -106,13 +129,6 @@ public class Pattern {
 		return this.relevance;
 	}
 	
-	public void setSupport(int support) {
-		this.support = support;
-	}
-	
-	public int getSupport() {
-		return this.support;
-	}
 	
 	// Resolve pattern attribute name
 	private void resolve() {
@@ -149,6 +165,30 @@ public class Pattern {
 
 	public void setCoveredSet(Set<Instance> coveredSet) {
 		this.coveredSet = coveredSet;
+	}
+
+	public double getIg() {
+		return ig;
+	}
+
+	public void setIg(double ig) {
+		this.ig = ig;
+	}
+
+	public double getChi() {
+		return chi;
+	}
+
+	public void setChi(double chi) {
+		this.chi = chi;
+	}
+
+	public int getgSupport() {
+		return gSupport;
+	}
+
+	public void setgSupport(int gSupport) {
+		this.gSupport = gSupport;
 	}
 
 	
