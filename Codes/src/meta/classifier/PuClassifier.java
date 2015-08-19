@@ -42,17 +42,17 @@ public class PuClassifier implements IClassifier {
 		
 		int numFolds = resource.getNumFolds();
 		// 全局pattern
-		Map<Double, List<Instance>> inssMap = mapInstancesByClass(inss);
-		for (Double classVal : inssMap.keySet()) {
-			PatternGen.genPuPatterns4Fold4L_x(inssMap.get(classVal), -1, classVal);
-		}
+//		Map<Double, List<Instance>> inssMap = mapInstancesByClass(inss);
+//		for (Double classVal : inssMap.keySet()) {
+//			PatternGen.genPuPatterns4Fold4L_x(inssMap.get(classVal), -1, classVal);
+//		}
 		
 		for (int fold = 0; fold < numFolds; fold++) {
-//			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
-//			Instances train = tt[0];
-//			Instances test = tt[1];
-			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
-			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
+			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
+			Instances train = tt[0];
+			Instances test = tt[1];
+//			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
+//			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
 			// map train instances to l_x
 			Map<Double, List<Instance>> map = mapInstancesByClass(train);
@@ -64,11 +64,11 @@ public class PuClassifier implements IClassifier {
 				// get L_x instances
 				List<Instance> instanceListL_x = map.get(classVal);
 				
-//				// gen L_x patterns
-//				PatternGen.genPuPatterns4Fold4L_x(instanceListL_x, fold, classVal);
-//				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, fold, classVal);
-				// load 全局pattern
-				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, -1, classVal);
+				// gen L_x patterns
+				PatternGen.genPuPatterns4Fold4L_x(instanceListL_x, fold, classVal);
+				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, fold, classVal);
+//				// load 全局pattern
+//				List<PuPattern> patterns4Fold4L_x = PatternLoader.loadPuPatterns4Fold4L_x(inss, -1, classVal);
 				
 				// calculate D(x)
 				caluateDx(patterns4Fold4L_x, instanceListL_x, inss);
@@ -102,21 +102,22 @@ public class PuClassifier implements IClassifier {
 			if (Constant.debug_one_class_chi) {
 				if (fold == Constant.debug_fold) {
 					System.out.println("--------------------------");
-//					ChiSquareCalculator.cal(inss, patterns);
-//					for (Pattern pattern : patterns) {
-//						System.out.println(pattern.getChi());
-//					}
+					ChiSquareCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getChi());
+					}
 					ChiSquareCalculator.cal4PerClass(inss, patterns);
 					for (PuPattern pattern : patterns) {
 //						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
 //						for (Double chi : chi4PerClass.values()) {
 //							System.out.print(chi + "\t");
 //						}
-						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
-						for (Integer supp : supp4PerClass.values()) {
-							System.out.print(supp + "\t");
-						}
-						System.out.println();
+//						TreeMap<Double, Double> supp4PerClass = pattern.supp4PerClass;
+//						for (Double supp : supp4PerClass.values()) {
+//							System.out.print(supp + "\t");
+//						}
+						//System.out.println(pattern.getgSupport());
+						//System.out.println();
 					}
 					System.out.println("--------------------------");
 				}
@@ -214,21 +215,22 @@ public class PuClassifier implements IClassifier {
 			if (Constant.debug_one_class_chi_afterFilter) {
 				if (fold == Constant.debug_fold) {
 					System.out.println("--------------------------");
-//					ChiSquareCalculator.cal(inss, patterns);
-//					for (Pattern pattern : patterns) {
-//						System.out.println(pattern.getChi());
-//					}
+					ChiSquareCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getChi());
+					}
 					ChiSquareCalculator.cal4PerClass(inss, patterns);
 					for (PuPattern pattern : patterns) {
 //						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
 //						for (Double chi : chi4PerClass.values()) {
 //							System.out.print(chi + "\t");
 //						}
-						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
-						for (Integer supp : supp4PerClass.values()) {
-							System.out.print(supp + "\t");
-						}
-						System.out.println();
+//						TreeMap<Double, Double> supp4PerClass = pattern.supp4PerClass;
+//						for (Double supp : supp4PerClass.values()) {
+//							System.out.print(supp + "\t");
+//						}
+						//System.out.println(pattern.getgSupport());
+						//System.out.println();
 					}
 					System.out.println("--------------------------");
 				}

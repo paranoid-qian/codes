@@ -20,7 +20,7 @@ public class PatternGen {
 	 * @throws Exception 
 	 */
 	public static void genPuPatterns4Fold4L_x(List<Instance> trainC_fit, int fold, double c_x) throws Exception {
-		System.out.println(trainC_fit.size());
+//		System.out.println(trainC_fit.size());
 		
 		TransactionGen.genL_X_PuTransactionFile(trainC_fit, fold, c_x);
 		File transFile = null;

@@ -34,42 +34,12 @@ public class IgCalculator {
 		sort(patterns);
 	}
 	
-	public static void calPerClassIg(Instances D, List<PuPattern> patterns) {
-		Map<Double, List<Instance>> map = mapInstancesByClass(D);
-		int numInstances = D.numInstances();
-		for (PuPattern pattern : patterns) {
-			double cls = pattern.getFromClass();
-			
-			for (int i = 0; i < numInstances; i++) {
-				Instance ins = D.instance(i);
-				if (pattern.isFit(ins)) {
-					if (ins.classValue() == cls) {
-						pattern.clsFitCount++;
-					} else {
-						pattern.otherClsFitCount++;
-					}
-				}
-			}
-			int clsNumInstances = map.get(cls).size();
-			pattern.clsFitCount = pattern.clsFitCount / clsNumInstances;
-			pattern.otherClsFitCount = pattern.otherClsFitCount / (numInstances - clsNumInstances);
-		}
-		Collections.sort(patterns, new Comparator<PuPattern>() {
-			@Override
-			public int compare(PuPattern o1, PuPattern o2) {
-				return Double.compare(o1.clsFitCount, o2.clsFitCount);
-			}
-		});
-		
-	}
-	
-	
 	private static void sort(List<? extends Pattern> patterns) {
 		// sort ascending 
 		Collections.sort(patterns, new Comparator<Pattern>() {
 			@Override
 			public int compare(Pattern o1, Pattern o2) {
-				return Double.compare(o1.getIg(), o2.getIg());
+				return Double.compare(o2.getIg(), o1.getIg());
 			}
 		});
 	}

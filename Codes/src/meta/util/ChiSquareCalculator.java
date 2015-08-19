@@ -35,13 +35,13 @@ public class ChiSquareCalculator {
 			chi = (chi-1) * numInstances;
 			pattern.setChi(chi);
 		}
-		// sort
-		Collections.sort(patterns, new Comparator<Pattern>() {
-			@Override
-			public int compare(Pattern o1, Pattern o2) {
-				return Double.compare(o1.getChi(), o2.getChi());
-			}
-		});
+//		// sort
+//		Collections.sort(patterns, new Comparator<Pattern>() {
+//			@Override
+//			public int compare(Pattern o1, Pattern o2) {
+//				return Double.compare(o1.getChi(), o2.getChi());
+//			}
+//		});
 	}
 	
 	
@@ -80,7 +80,7 @@ public class ChiSquareCalculator {
 //					System.out.println("eee");
 //				}
 				pattern.chi4PerClass.put(cls, chi);
-				pattern.supp4PerClass.put(cls, (int)a);
+				pattern.supp4PerClass.put(cls, a/clsInstances.size());
 			}
 		}
 	}

@@ -12,11 +12,11 @@ import wlsvm.WLSVM;
 public class Constant {
 	
 	public static final String TOP_FOLDER = "E:\\pulearning_codes_2015\\naivebayes\\";
-	public static final String DATASET = "diabetes";
+	public static final String DATASET = "vehicle";
+	
 	/* 随机种子 */
 	public static long s = System.currentTimeMillis();
-	static { s = 1434002341591L
-
+	static { s = 1430979989478L
 ;}
 	public static final Random rand = new Random(s); // 1415678605768L/1415678962610L
 	
@@ -36,7 +36,7 @@ public class Constant {
 	public static final boolean debug_fp_chi = false;
 	public static final boolean debug_fp_chi_afterFiltered = false;
 	public static final boolean debug_one_class_chi = false;
-	public static final boolean debug_one_class_chi_afterFilter = true;
+	public static final boolean debug_one_class_chi_afterFilter = false;
 	
 	// 取第几折
 	public static final int debug_fold = 1;
@@ -44,17 +44,17 @@ public class Constant {
 	public static final Classifier classifier = new NaiveBayes();
 	// 折数 
 	public static final int numFolds = 4;
-	public static final double trainRatio = 0.30;
+	public static final double trainRatio = 0.20;
 	// 挖CPF时：min_support
-	public static final double minSupport = 15;
-	public static final double puMinSupport = 20;
+	public static final double minSupport = 10;
+	public static final double puMinSupport = 10;
 	
 	// pattern至少要包含几个item
 	public static final int itemMinCount = 2;
 	public static final int puItemMinCount = 2;
 
 	// instance coverage
-	public static final double instance_coverage =  0.7;
+	public static final double instance_coverage =  0.9;
 	public static final int fpig_delta = 1;		// fp-ig方法的delta
 	
 	//public static final double recall = 0.4;	// 过滤CFP：recall

@@ -49,7 +49,7 @@ public class Pattern {
 	});
 	
 	// per class support
-	public TreeMap<Double, Integer> supp4PerClass = new TreeMap<>(new Comparator<Double>() {
+	public TreeMap<Double, Double> supp4PerClass = new TreeMap<>(new Comparator<Double>() {
 		@Override
 		public int compare(Double o1, Double o2) {
 			return Double.compare(o1, o2);

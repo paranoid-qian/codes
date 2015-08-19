@@ -41,18 +41,18 @@ public class FpIgClassifier implements IClassifier {
 		Evaluator eval = Evaluator.newEvaluator(resource.getClassifier(), inss);
 		int numFolds = resource.getNumFolds();
 		for (int fold = 0; fold < numFolds; fold++) {
-//			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
-//			Instances train = tt[0];
-//			Instances test = tt[1];
+			Instances[] tt = TrainTestGen.genTrainTest(resource.getTrainRatio(), inss, fold);
+			Instances train = tt[0];
+			Instances test = tt[1];
 			
-			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
-			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
+//			Instances train = TrainTestGen.genTrain(inss, numFolds, fold);
+//			Instances test = TrainTestGen.genTest(inss, numFolds, fold);
 			
 			// gen train_x pattern
 			PatternGen.genTrain_Foldx_FpPatterns(inss, fold);
 			
 			// load train_x pattern（直接利用FP产生的pattern即可）
-			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(inss, fold);
+			List<Pattern> patterns = PatternLoader.loadTrain_FoldX_FpPatterns(train, fold);
 			
 			
 			/*
@@ -73,21 +73,22 @@ public class FpIgClassifier implements IClassifier {
 			if (Constant.debug_fp_chi) {
 				if (fold == Constant.debug_fold) {
 					System.out.println("--------------------------");
-//					ChiSquareCalculator.cal(inss, patterns);
-//					for (Pattern pattern : patterns) {
-//						System.out.println(pattern.getChi());
-//					}
+					ChiSquareCalculator.cal(inss, patterns);
+					for (Pattern pattern : patterns) {
+						System.out.println(pattern.getChi());
+					}
 					ChiSquareCalculator.cal4PerClass(inss, patterns);
 					for (Pattern pattern : patterns) {
 //						TreeMap<Double, Double> chi4PerClass = pattern.chi4PerClass;
 //						for (Double chi : chi4PerClass.values()) {
 //							System.out.print(chi + "\t");
 //						}
-						TreeMap<Double, Integer> supp4PerClass = pattern.supp4PerClass;
-						for (Integer supp : supp4PerClass.values()) {
-							System.out.print(supp + "\t");
-						}
-						System.out.println();
+//						TreeMap<Double, Double> supp4PerClass = pattern.supp4PerClass;
+//						for (Double supp : supp4PerClass.values()) {
+//							System.out.print(supp + "\t");
+//						}
+						//System.out.println(pattern.getgSupport());
+						//System.out.println();
 					}
 					System.out.println("--------------------------");
 				}
